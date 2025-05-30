@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umbrella Corporation - Tiered Access</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #00ff00;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            background-color: #111;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 0 15px #ff0000;
+            margin: 20px auto;
+            position: relative;
+            display: none;
+        }
+        
+        #main-menu {
+            display: block;
+        }
+        
+        h1, h2 {
+            color: #ff0000;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+        
+        h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            border-bottom: 1px solid #ff0000;
+            padding-bottom: 10px;
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            background-color: #0a0a0a;
+            padding: 15px;
+            border-left: 3px solid #ff0000;
+        }
+        
+        button {
+            background-color: #222;
+            color: #00ff00;
+            border: 1px solid #ff0000;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button:hover {
+            background-color: #333;
+            box-shadow: 0 0 5px #ff0000;
+        }
+        
+        #lab-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        #virus-controls {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        select, input {
+            background-color: #222;
+            color: #00ff00;
+            border: 1px solid #ff0000;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #virus-result {
+            background-color: #0a0a0a;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        
+        #virus-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0a0a0a;
+            border: 1px solid #ff0000;
+            padding: 20px;
+        }
+        
+        #virus-image {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+        }
+        
+        #access-denied, #lockdown {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        #access-denied h1 {
+            color: #ff0000;
+            font-size: 3em;
+            animation: glitch 1s linear infinite;
+        }
+        
+        #lockdown {
+            background-color: #ff0000;
+            color: #000;
+        }
+        
+        #lockdown h1 {
+            color: #000;
+            text-shadow: 0 0 5px #fff;
+        }
+        
+        .tyrant {
+            position: fixed;
+            bottom: -300px;
+            right: 20px;
+            transition: all 1s;
+            z-index: 101;
+            height: 300px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #222;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #ff0000;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 #ff0000; }
+            25% { text-shadow: -2px 0 #00ff00; }
+            50% { text-shadow: 2px 0 #0000ff; }
+            75% { text-shadow: -2px 0 #ffff00; }
+            100% { text-shadow: 2px 0 #ff00ff; }
+        }
+        
+        .flashing {
+            animation: flash 0.5s infinite alternate;
+        }
+        
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
+        
+        #wesker-terminal {
+            display: none;
+        }
+        
+        #wesker-message {
+            background-color: #0a0a0a;
+            padding: 15px;
+            border: 1px solid #ff0000;
+            margin-top: 20px;
+        }
+        
+        #main-menu button {
+            width: auto;
+            margin: 10px auto;
+            display: block;
+            text-align: center;
+            padding: 15px 30px;
+        }
+        
+        /* Virus Database Styles */
+        #virus-database {
+            display: none;
+        }
+        
+        .virus-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .virus-card {
+            background-color: #0a0a0a;
+            border: 1px solid #ff0000;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .virus-card:hover {
+            box-shadow: 0 0 10px #ff0000;
+            transform: translateY(-5px);
+        }
+        
+        .virus-card h3 {
+            color: #ff0000;
+            margin-top: 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        
+        .virus-detail {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background-color: #111;
+            border: 3px solid #ff0000;
+            padding: 20px;
+            z-index: 200;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .virus-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .virus-info img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #00ff00;
+        }
+        
+        .virus-stats {
+            background-color: #0a0a0a;
+            padding: 15px;
+            border: 1px solid #00ff00;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a href="umbrella.html">Return to Home</a>
+    <!-- Main Menu -->
+    <div class="container" id="main-menu">
+        <h1>UMBRELLA CORPORATION</h1>
+        <h2>MAIN TERMINAL</h2>
+        <p>Select security clearance level to proceed:</p>
+        <button onclick="startQuiz(5)">Request Level 5 Access (T-Virus Lab)</button>
+        <button onclick="startQuiz(6)">Request Level 6 Access (Virus Database)</button>
+    </div>
+
+    <!-- Level 5 Quiz -->
+    <div class="container" id="quiz-level5">
+        <h1>UMBRELLA CORPORATION</h1>
+        <h2>LEVEL 5 SECURITY CLEARANCE</h2>
+        <p>Answer all questions correctly to access T-Virus research lab.</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-level5"></div>
+        </div>
+        
+        <div class="question">
+            <p>1. (RE2) What was the name of the virus leaked in Raccoon City?</p>
+            <button onclick="checkAnswer(5, 1, 'A')">A) T-Virus</button>
+            <button onclick="checkAnswer(5, 1, 'B')">B) G-Virus</button>
+            <button onclick="checkAnswer(5, 1, 'C')">C) Uroboros</button>
+            <button onclick="checkAnswer(5, 1, 'D')">D) Las Plagas</button>
+        </div>
+        
+        <div class="question">
+            <p>2. (RE3) What is the name of the B.O.W. that pursues Jill Valentine?</p>
+            <button onclick="checkAnswer(5, 2, 'A')">A) Mr. X</button>
+            <button onclick="checkAnswer(5, 2, 'B')">B) Nemesis</button>
+            <button onclick="checkAnswer(5, 2, 'C')">C) Tyrant</button>
+            <button onclick="checkAnswer(5, 2, 'D')">D) Licker</button>
+        </div>
+        
+        <div class="question">
+            <p>3. (RE4) What parasite infects the villagers in Spain?</p>
+            <button onclick="checkAnswer(5, 3, 'A')">A) T-Veronica</button>
+            <button onclick="checkAnswer(5, 3, 'B')">B) Progenitor</button>
+            <button onclick="checkAnswer(5, 3, 'C')">C) G-Virus</button>
+            <button onclick="checkAnswer(5, 3, 'D')">D) Las Plagas</button>
+        </div>
+    </div>
+
+    <!-- Level 6 Quiz -->
+    <div class="container" id="quiz-level6">
+        <h1>UMBRELLA CORPORATION</h1>
+        <h2>LEVEL 6 SECURITY CLEARANCE</h2>
+        <p>Top-secret access requires perfect score. Failure will be reported.</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-level6"></div>
+        </div>
+        
+        <div class="question">
+            <p>1. (RE5) What is the name of Wesker's virus-enhanced state?</p>
+            <button onclick="checkAnswer(6, 1, 'B')">A) Tyrant Form</button>
+            <button onclick="checkAnswer(6, 1, 'B')">B) Uroboros Mutation</button>
+            <button onclick="checkAnswer(6, 1, 'C')">C) Progenitor Awakening</button>
+            <button onclick="checkAnswer(6, 1, 'D')">D) G-Virus Transformation</button>
+        </div>
+        
+        <div class="question">
+            <p>2. (RE6) Which organization replaced Umbrella after its collapse?</p>
+            <button onclick="checkAnswer(6, 2, 'A')">A) Tricell</button>
+            <button onclick="checkAnswer(6, 2, 'B')">B) The Connections</button>
+            <button onclick="checkAnswer(6, 2, 'C')">C) Neo-Umbrella</button>
+            <button onclick="checkAnswer(6, 2, 'D')">D) The Family</button>
+        </div>
+        
+        <div class="question">
+            <p>3. (RE7) What is the name of the mold-based bioweapon?</p>
+            <button onclick="checkAnswer(6, 3, 'A')">A) Eveline</button>
+            <button onclick="checkAnswer(6, 3, 'B')">B) Miranda</button>
+            <button onclick="checkAnswer(6, 3, 'C')">C) Jack Baker</button>
+            <button onclick="checkAnswer(6, 3, 'D')">D) Lucas Baker</button>
+        </div>
+        
+        <div class="question">
+            <p>4. (RE8) What ancient virus is connected to the Megamycete?</p>
+            <button onclick="checkAnswer(6, 4, 'D')">A) T-Virus</button>
+            <button onclick="checkAnswer(6, 4, 'D')">B) G-Virus</button>
+            <button onclick="checkAnswer(6, 4, 'D')">C) Uroboros</button>
+            <button onclick="checkAnswer(6, 4, 'D')">D) Progenitor</button>
+        </div>
+        
+        <div class="question">
+            <p>5. (RE5) Where is Wesker's primary research facility located?</p>
+            <button onclick="checkAnswer(6, 5, 'B')">A) Antarctica</button>
+            <button onclick="checkAnswer(6, 5, 'B')">B) Volcanic Island</button>
+            <button onclick="checkAnswer(6, 5, 'C')">C) Raccoon City Ruins</button>
+            <button onclick="checkAnswer(6, 5, 'D')">D) Eastern Europe</button>
+        </div>
+    </div>
+
+    <!-- T-Virus Lab -->
+    <div class="container" id="t-virus-lab">
+        <h1>UMBRELLA CORPORATION</h1>
+        <h2>T-VIRUS RESEARCH LABORATORY</h2>
+        <p>Welcome, Level 5 Agent. You may proceed with viral synthesis.</p>
+        
+        <div id="lab-interface">
+            <div id="virus-controls">
+                <h3>VIRUS PARAMETERS</h3>
+                <label for="virus-strain">Primary Strain:</label>
+                <select id="virus-strain">
+                    <option value="t-virus">T-Virus</option>
+                    <option value="t-veronica">T-Veronica</option>
+                    <option value="g-virus">G-Virus</option>
+                </select>
+                
+                <label for="host-type">Host Organism:</label>
+                <select id="host-type">
+                    <option value="human">Human</option>
+                    <option value="animal">Animal</option>
+                    <option value="plant">Plant</option>
+                </select>
+                
+                <label for="mutation-rate">Mutation Rate:</label>
+                <input type="range" id="mutation-rate" min="1" max="10" value="5">
+                <span id="rate-value">5</span>
+                
+                <label for="stabilizer">Viral Stabilizer:</label>
+                <select id="stabilizer">
+                    <option value="none">None (Unstable)</option>
+                    <option value="serum">Tyrant Serum</option>
+                    <option value="parasite">Las Plagas</option>
+                </select>
+                
+                <button onclick="synthesizeVirus()">Initiate Synthesis</button>
+                <button onclick="returnToMenu()">Return to Main Terminal</button>
+            </div>
+            
+            <div id="virus-result-container">
+                <h3>SYNTHESIS RESULTS</h3>
+                <div id="virus-result">No synthesis performed yet.</div>
+                <div id="virus-visual">
+                    <img id="virus-image" src="" alt="Virus Result">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Virus Database -->
+    <div class="container" id="virus-database">
+        <h1>UMBRELLA CORPORATION</h1>
+        <h2>VIRUS DATABASE</h2>
+        <p>Welcome, Level 6 Agent. You have full access to all viral research.</p>
+        
+        <div class="virus-grid">
+            <div class="virus-card" onclick="showVirusDetail('t-virus')">
+                <h3>T-Virus</h3>
+                <p>Tyrant Virus</p>
+                <p>Strain: Alpha</p>
+            </div>
+            
+            <div class="virus-card" onclick="showVirusDetail('g-virus')">
+                <h3>G-Virus</h3>
+                <p>Golgotha Virus</p>
+                <p>Strain: Beta</p>
+            </div>
+            
+            <div class="virus-card" onclick="showVirusDetail('t-veronica')">
+                <h3>T-Veronica</h3>
+                <p>Enhanced T-Virus</p>
+                <p>Strain: Gamma</p>
+            </div>
+            
+            <div class="virus-card" onclick="showVirusDetail('las-plagas')">
+                <h3>Las Plagas</h3>
+                <p>Parasitic Organism</p>
+                <p>Type: Parasite</p>
+            </div>
+            
+            <div class="virus-card" onclick="showVirusDetail('uroboros')">
+                <h3>Uroboros</h3>
+                <p>Global Saturation</p>
+                <p>Strain: Omega</p>
+            </div>
+            
+            <div class="virus-card" onclick="showVirusDetail('progenitor')">
+                <h3>Progenitor</h3>
+                <p>Ancient Virus</p>
+                <p>Origin: Africa</p>
+            </div>
+        </div>
+        
+        <button onclick="returnToMenu()" style="margin-top: 20px;">Return to Main Terminal</button>
+    </div>
+
+    <!-- Virus Detail Pages -->
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="virus-detail" id="t-virus-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>T-VIRUS (TYRANT VIRUS)</h2>
+        <div class="virus-info">
+            <div>
+                <img src="https://static.wikia.nocookie.net/residentevil/images/2/28/Sp_game_cre_img01.png/revision/latest?cb=20221005203642" alt="T-Virus">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> T-002</p>
+                <p><strong>Origin:</strong> Raccoon City</p>
+                <p><strong>Creator:</strong> Dr. William Birkin</p>
+                <p><strong>First Deployment:</strong> 1998</p>
+                <p><strong>Infection Rate:</strong> 99.9%</p>
+                <p><strong>Mortality Rate:</strong> 100%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Reanimation of dead tissue</li>
+                    <li>Enhanced strength</li>
+                    <li>Loss of higher brain functions</li>
+                    <li>Extreme aggression</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="virus-detail" id="g-virus-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>G-VIRUS (GOLGOTHA VIRUS)</h2>
+        <div class="virus-info">
+            <div>
+                <img src="https://static.wikia.nocookie.net/villains/images/1/14/William_Form_1_REmake2.png/revision/latest?cb=20210603083144" alt="G-Virus">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> G-001</p>
+                <p><strong>Origin:</strong> NEST Laboratory</p>
+                <p><strong>Creator:</strong> Dr. William Birkin</p>
+                <p><strong>First Deployment:</strong> 1998</p>
+                <p><strong>Infection Rate:</strong> 100%</p>
+                <p><strong>Mortality Rate:</strong> 100%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Rapid cellular mutation</li>
+                    <li>Uncontrolled growth</li>
+                    <li>Multiple organ development</li>
+                    <li>Extreme regenerative abilities</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="virus-detail" id="t-veronica-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>T-VERONICA VIRUS</h2>
+        <div class="virus-info">
+            <div>
+                <img src="https://www.projectumbrella.net/uploads/1/3/0/6/130616230/evilrveronica7_orig.jpg " alt="T-Veronica">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> T-003</p>
+                <p><strong>Origin:</strong> Rockfort Island</p>
+                <p><strong>Creator:</strong> Dr. Alexia Ashford</p>
+                <p><strong>First Deployment:</strong> 1998</p>
+                <p><strong>Infection Rate:</strong> 95%</p>
+                <p><strong>Mortality Rate:</strong> 98%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Pyrokinesis</li>
+                    <li>Enhanced intelligence</li>
+                    <li>Complete cellular control</li>
+                    <li>Delayed mutation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="virus-detail" id="las-plagas-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>LAS PLAGAS PARASITE</h2>
+        <div class="virus-info">
+            <div>
+                <img src="https://static.wikia.nocookie.net/villains/images/6/6f/The_Las_Plagas.jpg/revision/latest?cb=20230411113027  " alt="Las Plagas">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> LP-001</p>
+                <p><strong>Origin:</strong> Spain</p>
+                <p><strong>Discoverer:</strong> Osmund Saddler</p>
+                <p><strong>First Deployment:</strong> 2004</p>
+                <p><strong>Infection Rate:</strong> 90%</p>
+                <p><strong>Mortality Rate:</strong> 70%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Host mind control</li>
+                    <li>Enhanced physical abilities</li>
+                    <li>Partial mutation</li>
+                    <li>Hive mind connection</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="virus-detail" id="uroboros-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>UROBOROS VIRUS</h2>
+        <div class="virus-info">
+            <div>
+                <img src="https://static.wikia.nocookie.net/evil/images/e/e8/The_Uroboros_Virus.jpg/revision/latest?cb=20160406184349 " alt="Uroboros">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> U-001</p>
+                <p><strong>Origin:</strong> Volcanic Island</p>
+                <p><strong>Creator:</strong> Albert Wesker</p>
+                <p><strong>First Deployment:</strong> 2009</p>
+                <p><strong>Infection Rate:</strong> 100%</p>
+                <p><strong>Mortality Rate:</strong> 99.9%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Global saturation capability</li>
+                    <li>Selective infection</li>
+                    <li>Massive tentacle growth</li>
+                    <li>Complete cellular reconstruction</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="virus-detail" id="progenitor-detail">
+        <button class="close-btn" onclick="closeVirusDetail()">X</button>
+        <h2>PROGENITOR VIRUS</h2>
+        <div class="virus-info">
+            <div>
+                <img src=":https://static.wikia.nocookie.net/residentevil/images/4/4f/Snapshot20090312174517.png/revision/latest?cb=20090404224445 " alt="Progenitor">
+            </div>
+            <div class="virus-stats">
+                <p><strong>Code Name:</strong> P-000</p>
+                <p><strong>Origin:</strong> West Africa</p>
+                <p><strong>Discoverer:</strong> Dr. James Marcus</p>
+                <p><strong>First Deployment:</strong> 1967</p>
+                <p><strong>Infection Rate:</strong> 100%</p>
+                <p><strong>Mortality Rate:</strong> 99.9%</p>
+                <p><strong>Primary Effects:</strong></p>
+                <ul>
+                    <li>Source of all modern viruses</li>
+                    <li>Extreme mutation potential</li>
+                    <li>Genetic memory</li>
+                    <li>Connection to megamycete</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Denied Screen -->
+    <div id="access-denied">
+        <h1>ACCESS DENIED</h1>
+        <p>Security has been notified of your failed attempt.</p>
+        <button onclick="returnToMenu()">Return to Main Terminal</button>
+    </div>
+
+    <!-- Lockdown Screen -->
+    <div id="lockdown">
+        <h1>FACILITY LOCKDOWN INITIATED</h1>
+        <p>All exits have been sealed. Security teams dispatched.</p>
+    </div>
+
+    <!-- Tyrant Image -->
+    <img src="https://static.wikia.nocookie.net/residentevil/images/5/58/RE_Tyrant_Model.png" class="tyrant" id="tyrant">
+
+    <!-- Audio Elements -->
+    <audio id="correct-sound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3" preload="auto"></audio>
+    <audio id="denied-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+    <audio id="alarm-sound" src="https://www.soundjay.com/mechanical/sounds/alarm-01.mp3" preload="auto"></audio>
+    <audio id="lab-ambience" src="https://www.soundjay.com/mechanical/sounds/computer-01.mp3" loop preload="auto"></audio>
+
+    <script>
+        // Quiz tracking
+        let currentLevel = 0;
+        let correctAnswers = 0;
+        const requiredAnswers = {
+            5: 3,
+            6: 5
+        };
+        
+        // Virus images
+        const virusImages = {
+            't-virus-human': 'https://static.wikia.nocookie.net/residentevil/images/2/28/Sp_game_cre_img01.png/revision/latest?cb=20221005203642',
+            't-virus-animal': 'https://dnm.nflximg.net/api/v6/BvVbc2Wxr2w6QuoANoSpJKEIWjQ/AAAAQbZ87tsjvFxy7KsjeZOvCxUi_russb9q2PtR-nggrbIohkN1-ZU3CH7bCy9FjIidEWiHgbmTcPjdOLEx0v7Qhohxh8VX-WJtXM5a9xJZIMMtxdlYQMKLUdhI_z4yPQpwaiCmPXzEUOidH-Aj1b2HDT2gIog.jpg?r=f59',
+            't-virus-plant': 'https://static.wikia.nocookie.net/residentevil/images/b/bb/Pachislot_Plant_42.png/revision/latest?cb=20100704221449',
+            't-veronica-human': 'ERROR',
+            'g-virus-human': 'https://static.wikia.nocookie.net/villains/images/1/14/William_Form_1_REmake2.png/revision/latest?cb=20210603083144'
+        };
+        
+        // Start quiz for specific level
+        function startQuiz(level) {
+            currentLevel = level;
+            correctAnswers = 0;
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById(`quiz-level${level}`).style.display = 'block';
+            document.getElementById(`progress-level${level}`).style.width = '0%';
+            updateProgress(level);
+        }
+        
+        // Check quiz answers
+        function checkAnswer(level, questionNum, correctOption) {
+            const userAnswer = event.target.textContent.charAt(0);
+            
+            if (userAnswer === correctOption) {
+                document.getElementById('correct-sound').play();
+                correctAnswers++;
+                updateProgress(level);
+                
+                if (correctAnswers === requiredAnswers[level]) {
+                    setTimeout(() => {
+                        document.getElementById(`quiz-level${level}`).style.display = 'none';
+                        if (level === 5) {
+                            document.getElementById('t-virus-lab').style.display = 'block';
+                        } else {
+                            document.getElementById('virus-database').style.display = 'block';
+                        }
+                        document.getElementById('lab-ambience').play();
+                    }, 1000);
+                }
+            } else {
+                document.getElementById('denied-sound').play();
+                document.getElementById(`quiz-level${level}`).style.display = 'none';
+                document.getElementById('access-denied').style.display = 'flex';
+                
+                if (level === 6) {
+                    setTimeout(() => {
+                        document.getElementById('lockdown').style.display = 'flex';
+                        document.getElementById('alarm-sound').play();
+                        document.getElementById('tyrant').style.bottom = '0';
+                    }, 2000);
+                }
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress(level) {
+            const progress = (correctAnswers / requiredAnswers[level]) * 100;
+            document.getElementById(`progress-level${level}`).style.width = `${progress}%`;
+        }
+        
+        // Synthesize T-Virus
+        function synthesizeVirus() {
+            const strain = document.getElementById('virus-strain').value;
+            const host = document.getElementById('host-type').value;
+            const rate = document.getElementById('mutation-rate').value;
+            const stabilizer = document.getElementById('stabilizer').value;
+            
+            document.getElementById('rate-value').textContent = rate;
+            
+            let result = "";
+            let imageKey = `${strain}-${host}`;
+            
+            // Generate result text
+            result += `VIRUS SYNTHESIS COMPLETE\n`;
+            result += `=======================\n`;
+            result += `Primary Strain: ${strain.toUpperCase()}\n`;
+            result += `Host Organism: ${host.toUpperCase()}\n`;
+            result += `Mutation Rate: ${rate}/10\n`;
+            result += `Stabilizer: ${stabilizer.toUpperCase()}\n\n`;
+            
+            // Determine outcome
+            if (stabilizer === 'none' && rate > 7) {
+                result += `WARNING: UNSTABLE MUTATION\n`;
+                result += `Specimen has breached containment!\n`;
+                result += `Emergency protocols initiated.`;
+            } else {
+                result += `SYNTHESIS SUCCESSFUL\n`;
+                result += `New B.O.W. specimen created.\n`;
+                
+                if (strain === 't-virus') {
+                    if (host === 'human') result += `Result: Standard Zombie`;
+                    if (host === 'animal') result += `Result: Cerberus (Zombie Dog)`;
+                    if (host === 'plant') result += `Result: Plant 42 Hybrid`;
+                } else if (strain === 't-veronica') {
+                    result += `Result: T-Veronica Infected`;
+                } else if (strain === 'g-virus') {
+                    result += `Result: G-Mutant`;                 }
+            }
+            
+            // Display result
+            document.getElementById('virus-result').textContent = result;
+            
+            // Show image if available
+            const virusImage = document.getElementById('virus-image');
+            if (virusImages[imageKey]) {
+                virusImage.src = virusImages[imageKey];
+                virusImage.style.display = 'block';
+            } else {
+                virusImage.style.display = 'none';
+            }
+        }
+        
+        // Show virus detail
+        function showVirusDetail(virus) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById(`${virus}-detail`).style.display = 'block';
+        }
+        
+        // Close virus detail
+        function closeVirusDetail() {
+            document.getElementById('overlay').style.display = 'none';
+            document.querySelectorAll('.virus-detail').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+        
+        // Return to main menu
+        function returnToMenu() {
+            // Hide all containers
+            document.querySelectorAll('.container').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Hide special screens
+            document.getElementById('access-denied').style.display = 'none';
+            document.getElementById('lockdown').style.display = 'none';
+            
+            // Stop sounds
+            document.getElementById('alarm-sound').pause();
+            document.getElementById('lab-ambience').pause();
+            
+            // Reset Tyrant position
+            document.getElementById('tyrant').style.bottom = '-300px';
+            
+            // Show main menu
+            document.getElementById('main-menu').style.display = 'block';
+        }
+        
+        // Initialize slider values
+        document.getElementById('mutation-rate').addEventListener('input', function() {
+            document.getElementById('rate-value').textContent = this.value;
+        });
+    </script>
+</body>
+</html>
