@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Umbrella Corporation Systems</title>
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    background: #111 url('pictures/back3.jpg') center center / cover no-repeat;
+    color: #eee;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  
+  h1, h2 {
+    color: #c00;
+    text-align: center;
+  }
+  
+  /* AI Chat System Styles */
+  #aiSystem {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    display: none; /* Initially hidden */
+  }
+  
+  #characterSelect {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  
+  #characterSelect button {
+    margin: 10px;
+    padding: 12px 24px;
+    background: #222;
+    border: 1px solid #555;
+    color: #eee;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+  
+  #characterSelect button:hover {
+    background: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(255,0,0,0.5);
+  }
+  
+  #chatContainer {
+    display: none;
+    flex-direction: column;
+    height: 70vh;
+    max-width: 600px;
+    margin: 20px auto 0;
+    border: 1px solid #444;
+    background: rgba(0,0,0,0.8);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255,0,0,0.3);
+  }
+  
+  #charPhoto img {
+    max-width: 150px;
+    margin: 10px auto;
+    display: block;
+    border-radius: 8px;
+    border: 2px solid #c00;
+  }
+  
+  #chatLog {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background: rgba(0,0,0,0.7);
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    margin: 10px 0;
+    border-radius: 5px;
+  }
+  
+  #inputArea {
+    display: flex;
+    padding: 10px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 0 0 8px 8px;
+  }
+  
+  #userInput {
+    flex: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background: #222;
+    color: #eee;
+  }
+  
+  #sendBtn {
+    padding: 10px 20px;
+    margin-left: 10px;
+    background: #5a1f1f;
+    border: none;
+    color: #eee;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  
+  #sendBtn:hover {
+    background: #7c2929;
+    transform: translateY(-1px);
+  }
+  
+  /* Security System Styles */
+  #securitySystem {
+    max-width: 800px;
+    margin: 40px auto;
+  }
+  
+  #quizContainer, #terminalContainer {
+    background: rgba(0,0,0,0.85);
+    border: 2px solid #000300;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #ff2f00 inset;
+  }
+  
+  #quizContainer {
+    text-align: center;
+  }
+  
+  #quizQuestion {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #ff0d00;
+  }
+  
+  .option-btn {
+    display: block;
+    background: transparent;
+    border: 2px solid #ff1900;
+    color: #ff4000;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    padding: 10px 15px;
+    margin: 10px auto;
+    max-width: 400px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  
+  .option-btn:hover {
+    background: #003300;
+  }
+  
+  #timer {
+    font-size: 1.3rem;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ff0000;
+  }
+  
+  #passwordDisplay {
+    margin-top: 25px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff0000;
+  }
+  
+  #copyBtn {
+    display: none;
+    margin-top: 15px;
+    padding: 8px 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    background: #ff0000;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff0000;
+    transition: background 0.3s ease;
+  }
+  
+  .back-button {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 8px 20px;
+    background-color: #ff0000;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #cc0000;
+    transform: translateX(-5px);
+  }
+  
+  #copyBtn:hover {
+    background: #cc0000;
+  }
+  
+  #terminalContainer {
+    display: none;
+    margin-top: 20px;
+  }
+  
+  #output {
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    min-height: 200px;
+    color: #ff0000;
+  }
+  
+  #passwordInput {
+    margin-top: 10px;
+    width: 100%;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #ff0000;
+    color: #ff0000;
+    padding: 8px 5px;
+    outline: none;
+    caret-color: #ff0000;
+  }
+  
+  #accessDenied {
+    color: #ff0000;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  
+  #overrideBtn {
+    display: none;
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    background: #ff0000;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 0 8px #ff0000;
+    transition: background 0.3s ease;
+  }
+  
+  #overrideBtn:hover {
+    background: #cc0000;
+  }
+  
+  /* Conversation suggestion styles */
+  #conversationSuggestion {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ff2200;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 600px;
+    border-radius: 5px;
+    font-style: italic;
+    color: #ff0202;
+    text-align: center;
+  }
+  
+  /* Mute button styles */
+  #mute-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #c00;
+    color: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  #mute-btn:hover {
+    background: rgba(255,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+  <audio id="bgmusic" autoplay loop muted>
+    <source src="themes/sernety.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <button id="mute-btn">🔊 Mute</button>
+  <a href="index.html" class="back-button">← Back to Main Facility</a>
+  
+  <!-- AI Chat System -->
+  <section id="aiSystem">
+    <h1>Umbrella Corporation AI Assistant</h1>
+    <div id="conversationSuggestion"></div>
+    <p style="text-align: center;">Select a character to chat with:</p>
+    <div id="characterSelect">
+      <button data-char="albert">Dr. Albert Wesker</button>
+      <button data-char="william">Dr. William Birkin</button>
+      <button data-char="alex">Alex Wesker</button>
+    </div>
+
+    <div id="chatContainer">
+      <div id="charPhoto"></div>
+      <div id="chatLog"></div>
+      <div id="inputArea">
+        <input type="text" id="userInput" placeholder="Ask your question..." />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security System -->
+  <section id="securitySystem">
+    <h2>U.M.I.S - Umbrella Main Intelligence System</h2>
+    <div id="quizContainer" role="main" aria-live="polite">
+      <div id="quizQuestion">Loading question...</div>
+      <div id="optionsContainer" aria-label="Answer options"></div>
+      <div id="timer" aria-live="polite" aria-atomic="true">Time left: 7s</div>
+      <div id="passwordDisplay" aria-live="polite"></div>
+      <button id="copyBtn" aria-label="Copy password button">Copy Password</button>
+    </div>
+
+    <div id="terminalContainer" role="main" aria-live="polite" aria-label="Terminal Access">
+      <div id="output">
+        Welcome to U.M.I.S. - Umbrella Main Intelligence System
+        <br>Please enter your security clearance password:
+      </div>
+      <input type="password" id="passwordInput" placeholder="Enter password here..." aria-label="Security password input" autocomplete="off" />
+      <div id="accessDenied" role="alert"></div>
+      <button id="overrideBtn" aria-label="Override Access button">Override Access</button>
+    </div>
+  </section>
+
+<script>
+  const audio = document.getElementById('bgmusic');
+  const btn = document.getElementById('mute-btn');
+  
+  // Check if mute state is saved
+  const savedMuteState = localStorage.getItem('audioMuted');
+  if (savedMuteState === 'true') {
+    audio.muted = true;
+    btn.innerHTML = '🔇 Unmute';
+  } else {
+    audio.muted = false;
+    btn.innerHTML = '🔊 Mute';
+  }
+  
+  btn.addEventListener('click', () => {
+    if (audio.muted) {
+      audio.muted = false;
+      btn.innerHTML = '🔊 ';
+      audio.play();
+      localStorage.setItem('audioMuted', 'false');
+    } else {
+      audio.muted = true;
+      btn.innerHTML = '🔇 ';
+      audio.pause();
+      localStorage.setItem('audioMuted', 'true');
+    }
+  });
+
+  // AI Chat System JavaScript
+  const characters = {
+    albert: {
+      name: "Dr. Albert Wesker",
+      photo: "pictures/wisker(2).jpg",
+      knowledge: {
+        "role":                "Umbrella's chief researcher and secret double agent.",
+        "background":          "Originally part of S.T.A.R.S. before betraying the team.",
+        "virus research":       "Responsible for Uroboros virus development.",
+        "abilities":               "Enhanced strength, speed, regeneration.",
+        "appearance":              "Always wears dark sunglasses and black coat.",
+        "personality":              "Cold, manipulative, highly intelligent.",
+        "motivation":               "Wants to evolve humanity through viruses.",
+        "conflict":                  "Frequently opposes protagonists in Resident Evil series.",
+        "secret projects":           "Involved in multiple clandestine bioweapon programs.",
+        "death":                       "Faked his death multiple times, finally defeated by Chris Redfield.",
+        "quotes":                       "“The weak are destined to perish.”",
+        "allies":                        "Works with Umbrella executives, but is mainly a lone wolf.",
+        "weapons":                         "Skilled with firearms and martial arts.",
+        "infection":                       "Injected himself with experimental viruses to gain powers.",
+        "legacy":                             "One of Umbrella's most dangerous and iconic figures.",
+        "skills":                              "Master strategist and manipulator.",
+        "notable events":                        "S.T.A.R.S. betrayal, Racoon City outbreak.",
+        "strengths":                               "Superhuman abilities and tactical mind.",
+        "weaknesses":                               "Arrogance and overconfidence.",
+        "quotes2":                                    "“Evolution is the only truth.”",
+        "research":                                    "Pushed limits of virus mutation.",
+        "projects":                                    "Oversaw the Tyrant program.",
+        "manipulation":                             "Turned others into pawns for his plan.",
+        "enemies":                                "Chris Redfield, Jill Valentine, Leon Kennedy.",
+        "appearance changes":                     "Looks more monstrous after virus exposure.",
+        "notoriety":                               "Feared by many within Umbrella.",
+        "ambitions":                                "To become a godlike being.",
+        "training":                                 "Highly skilled fighter and tactician.",
+        "survival":                                    "Survived multiple fatal attacks.",
+        "relation to Umbrella":                        "Part founder and chief scientist.",
+        "secret labs":                                  "Operated covert labs worldwide.",
+        "fate":                                 "Ultimately defeated but remains influential in lore.",
+      },
+      suggestion: "Ask me about my role in the S.T.A.R.S. betrayal or my research on the Uroboros virus."
+    },
+    william: {
+      name: "Dr. William Birkin",
+      photo: "pictures/will.jpg ",
+      knowledge: {
+        "role": "Geneticist and creator of the G-virus.",
+        "background": "Key Umbrella scientist obsessed with viral mutations.",
+        "virus research": "Developed the highly unstable G-virus.",
+        "mutation": "Infected himself, mutating into a monstrous form.",
+        "appearance": "Often shown in lab coat, later grotesque mutated forms.",
+        "personality": "Brilliant but reckless and paranoid.",
+        "motivation": "Push viral evolution beyond limits.",
+        "conflict": "Enemy of protagonists due to G-virus outbreak.",
+        "secret projects": "Worked on advanced bioweapons.",
+        "death": "Killed after mutated form was defeated by protagonists.",
+        "quotes": "“The virus is the future of mankind!”",
+        "allies": "Mostly worked alone, but had Umbrella's backing.",
+        "weapons": "Uses chemical sprays and claws in mutated forms.",
+        "infection": "Self-experimentation led to horrific mutation.",
+        "legacy": "Creator of one of the deadliest viruses in Resident Evil.",
+        "skills": "Advanced genetics and virology knowledge.",
+        "notable events": "Raccoon City lab incident.",
+        "strengths": "Incredible regeneration and adaptability.",
+        "weaknesses": "Unstable mutation causes loss of control.",
+        "quotes2": "“Power beyond comprehension!”",
+        "research": "Focused on viral DNA manipulation.",
+        "projects": "Pushed bioweapons to new levels.",
+        "manipulation": "Not as manipulative as Wesker, more focused on science.",
+        "enemies": "Leon Kennedy, Claire Redfield.",
+        "appearance changes": "From human to multiple mutant stages.",
+        "notoriety": "Feared as a monster and mad scientist.",
+        "ambitions": "To perfect viral evolution.",
+        "training": "Top-tier geneticist.",
+        "survival": "Died during outbreak.",
+        "relation to Umbrella": "Umbrella's lead scientist in viral projects.",
+        "secret labs": "Created hidden research facilities.",
+        "fate": "Destroyed but virus legacy remains.",
+      },
+      suggestion: "Ask me about my creation of the G-virus or my transformation during the Raccoon City incident."
+    },
+    alex: {
+      name: "Alex Wesker",
+      photo: "pictures/alexwisker.jpg ",
+      knowledge: {
+        "role": "Umbrella scientist and Wesker's sister.",
+        "background": "Secretive and manipulative within Umbrella.",
+        "virus research": "Developed the mold virus and pursued immortality.",
+        "abilities": "Superhuman strength, regeneration, and control over mold.",
+        "appearance": "Cold, emotionless, usually in lab gear.",
+        "personality": "Calculating, mysterious, and ruthless.",
+        "motivation": "To transcend human limits through viral research.",
+        "conflict": "Opposed protagonists and Umbrella rivals.",
+        "secret projects": "Involved in mold bioweapons program.",
+        "death": "Killed after losing control of mold infection.",
+        "quotes": "“I control the mold, and through it, life itself.”",
+        "allies": "Operated mostly independently.",
+        "weapons": "Uses enhanced physical combat and mold control.",
+        "infection": "Self-experimented to gain powers.",
+        "legacy": "One of Umbrella's most dangerous bioweapon creators.",
+        "skills": "Mastery of viral manipulation and bioengineering.",
+        "notable events": "Contained outbreak and betrayal incidents.",
+        "strengths": "Immense regeneration and power.",
+        "weaknesses": "Overconfidence led to downfall.",
+        "quotes2": "“Immortality is within reach.”",
+        "research": "Focused on bioweapon mold.",
+        "projects": "Pushed viral bioengineering boundaries.",
+        "manipulation": "Highly manipulative and secretive.",
+        "enemies": "BSAA agents and protagonists.",
+        "appearance changes": "Infected form shows mold growths.",
+        "notoriety": "Feared for her ruthlessness.",
+        "ambitions": "To become eternal life.",
+        "training": "Highly educated scientist and fighter.",
+        "survival": "Defeated but legacy remains.",
+        "relation to Umbrella": "High-ranking Umbrella scientist.",
+        "secret labs": "Led secret research sites.",
+        "fate": "Destroyed physically, but mold virus persists.",
+      },
+      suggestion: "Ask me about my experiments with the mold virus or my pursuit of immortality."
+    },
+    ozwell: {
+      name: "Dr. Ozwell E. Spencer",
+      photo: "pictures/Dr. Ozwell E. Spencer.jpg ",
+      knowledge: {
+        "role": "Umbrella Corporation co-founder.",
+        "background": "Visionary behind Umbrella's bio-research and power.",
+        "philosophy": "Believes viral evolution is mankind's destiny.",
+        "appearance": "Older man with glasses, formal suit.",
+        "personality": "Calm, intelligent, and ruthless.",
+        "motivation": "Wants to control evolution through viruses.",
+        "legacy": "Founded one of the world's most powerful biotech corps.",
+        "conflict": "Behind many Umbrella conspiracies.",
+        "quotes": "“True evolution requires sacrifice.”",
+        "allies": "Worked with other founders and scientists.",
+        "skills": "Mastermind strategist and geneticist.",
+        "notable events": "Set Umbrella's dark path.",
+        "strengths": "Visionary leader and planner.",
+        "weaknesses": "Detached from humanity.",
+        "quotes2": "“The weak will perish, only the strong will survive.”",
+        "research": "Oversaw early viral experiments.",
+        "projects": "Founded Tyrant program.",
+        "manipulation": "Controlled Umbrella's direction.",
+        "enemies": "Global governments and heroes.",
+        "appearance changes": "Mostly consistent aged appearance.",
+        "notoriety": "Shadowy figure in biohazard history.",
+        "ambitions": "To create a new world order.",
+        "training": "Extensive scientific education.",
+        "survival": "Died before Umbrella's fall.",
+        "relation to Umbrella": "Primary founder.",
+        "secret labs": "Commissioned secret facilities.",
+        "fate": "Legacy lives on despite death.",
+      },
+      suggestion: "Ask me about my vision for Umbrella Corporation or my philosophy on human evolution."
+    },
+  };
+
+  let currentCharKey = null;
+
+  const charSelectDiv = document.getElementById('characterSelect');
+  const chatContainer = document.getElementById('chatContainer');
+  const chatLog = document.getElementById('chatLog');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const charPhotoDiv = document.getElementById('charPhoto');
+  const aiSystem = document.getElementById('aiSystem');
+  const conversationSuggestion = document.getElementById('conversationSuggestion');
+
+  function addMessage(sender, text) {
+    chatLog.textContent += `${sender}: ${text}\n\n`;
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function answerQuestion(question) {
+    if (!currentCharKey) return "Please select a character first.";
+
+    const knowledge = characters[currentCharKey].knowledge;
+    const q = question.toLowerCase();
+
+    // Search knowledge keys for keywords in question
+    for (const key in knowledge) {
+      if (q.includes(key.toLowerCase())) {
+        return knowledge[key];
+      }
+    }
+    return "Sorry, I don't have information about that. Try asking something else related to me.";
+  }
+
+  charSelectDiv.addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON') {
+      currentCharKey = e.target.dataset.char;
+      chatContainer.style.display = 'flex';
+      chatLog.textContent = '';
+      addMessage("System", `You are now chatting with ${characters[currentCharKey].name}. Ask me anything about my   "role":                "
+  "background":   "virus research":  "abilities":    "appearance":     "personality":      "motivation":    "conflict":  
+   "secret projects":    "death":    "quotes":       "allies":      "weapons":       "infection":
+       notable events":   "strengths":     "weaknesses":   "relation to Umbrella":   "secret labs":   "fate":   etc...`);
+      conversationSuggestion.textContent = `Suggestion: ${characters[currentCharKey].suggestion}`;
+      charPhotoDiv.innerHTML = `<img src="${characters[currentCharKey].photo}" alt="${characters[currentCharKey].name} photo" />`;
+      userInput.focus();
+    }
+  });
+
+  sendBtn.addEventListener('click', () => {
+    const question = userInput.value.trim();
+    if (!question) return;
+    addMessage('You', question);
+    const answer = answerQuestion(question);
+    addMessage(characters[currentCharKey].name, answer);
+    userInput.value = '';
+  });
+
+  userInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendBtn.click();
+  });
+
+  // Security System JavaScript
+  const quizData = [
+    { q: "What does 'B.O.W' stand for in Umbrella Corporation?", options: ["Bio Organic Weapon", "Biological Official War", "Basic Operational Weapon", "Bio Origin Water"], answer: "Bio Organic Weapon" },
+    { q: "Who is the founder of Umbrella Corporation?", options: ["Albert Wesker", "Oswell Wesker", "William Birkin", "James Marcus"], answer: "Oswell Wesker" },
+    { q: "Which virus caused the zombie outbreak?", options: ["T-virus", "G-virus", "C-virus", "Z-virus"], answer: "T-virus" },
+    { q: "Name the famous Umbrella facility in the game.", options: ["The Hive", "Raccoon City", "The Nest", "Sector 7"], answer: "The Hive" },
+    { q: "What color is the Umbrella Corporation logo?", options: ["Red and White", "Blue and White", "Black and Red", "Green and Yellow"], answer: "Red and White" }
+  ];
+
+  const quizContainer = document.getElementById('quizContainer');
+  const quizQuestion = document.getElementById('quizQuestion');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const timerDisplay = document.getElementById('timer');
+  const passwordDisplay = document.getElementById('passwordDisplay');
+  const copyBtn = document.getElementById('copyBtn');
+
+  const terminalContainer = document.getElementById('terminalContainer');
+  const output = document.getElementById('output');
+  const passwordInput = document.getElementById('passwordInput');
+  const accessDenied = document.getElementById('accessDenied');
+  const overrideBtn = document.getElementById('overrideBtn');
+  const securitySystem = document.getElementById('securitySystem');
+
+  let currentPassword = '';
+  let failCount = 0;
+  const maxFails = 3;
+
+  let countdown = 7;
+  let countdownInterval;
+  let answered = false;
+
+  function generatePassword() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
+    let pass = "";
+    for (let i = 0; i < 10; i++) {
+      pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return pass;
+  }
+
+  function loadRandomQuestion() {
+    answered = false;
+    countdown = 7;
+    timerDisplay.textContent = `Time left: ${countdown}s`;
+    optionsContainer.innerHTML = "";
+    passwordDisplay.textContent = "";
+    passwordDisplay.style.color = '#ff0000';
+    copyBtn.style.display = "none";
+    const idx = Math.floor(Math.random() * quizData.length);
+    const currentQuiz = quizData[idx];
+    quizQuestion.textContent = currentQuiz.q;
+
+    currentQuiz.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = option;
+      btn.setAttribute('aria-label', `Answer option: ${option}`);
+      btn.onclick = () => selectAnswer(option, currentQuiz.answer);
+      optionsContainer.appendChild(btn);
+    });
+
+    countdownInterval = setInterval(() => {
+      countdown--;
+      timerDisplay.textContent = `Time left: ${countdown}s`;
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        if (!answered) {
+          disableOptions();
+          passwordDisplay.style.color = '#ff0000';
+          passwordDisplay.textContent = "Time's up! Access denied.";
+          setTimeout(() => location.reload(), 3000);
+        }
+      }
+    }, 1000);
+  }
+
+  function disableOptions() {
+    const buttons = optionsContainer.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = true);
+  }
+
+  function selectAnswer(selected, correct) {
+    if (answered) return;
+    answered = true;
+    clearInterval(countdownInterval);
+    disableOptions();
+    if (selected === correct) {
+      currentPassword = generatePassword();
+      passwordDisplay.style.color = '#00ff00';
+      passwordDisplay.textContent = `Correct! Your temporary password is: ${currentPassword}`;
+      copyBtn.style.display = "inline-block";
+      setTimeout(() => {
+        quizContainer.style.display = "none";
+        terminalContainer.style.display = "block";
+        passwordInput.focus();
+      }, 5000);
+    } else {
+      passwordDisplay.style.color = '#ff0000';
+      passwordDisplay.textContent = "Wrong answer! Access denied.";
+      setTimeout(() => location.reload(), 3000);
+    }
+  }
+
+  copyBtn.addEventListener('click', () => {
+    if (currentPassword) {
+      navigator.clipboard.writeText(currentPassword).then(() => {
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => copyBtn.textContent = "Copy Password", 1500);
+      });
+    }
+  });
+
+  function typeText(element, text, delay = 50, callback) {
+    let i = 0;
+    function typing() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, delay);
+      } else {
+        if (callback) callback();
+      }
+    }
+    typing();
+  }
+
+  function showDetails() {
+    const details = [
+      "\n\nUser: Albert Wesker",
+      "\nSecurity Level: Top Secret - Level 7",
+      "\nLast Login: 2025-06-02 03:17:45",
+      "\nTop Secret Files: B.O.W research, Virus data, Project Nemesis",
+      "\n\nWelcome back, Director Wesker."
+    ];
+    let idx = 0;
+
+    function next() {
+      if (idx < details.length) {
+        typeText(output, details[idx], 40, () => {
+          idx++;
+          setTimeout(next, 600);
+        });
+      }
+    }
+    next();
+  }
+
+  passwordInput.addEventListener('keydown', (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = passwordInput.value.trim();
+      if (!val) return;
+
+      if (val === currentPassword) {
+        output.innerHTML += "<br><br>&gt; Password accepted. Accessing system...";
+        accessDenied.textContent = "";
+        passwordInput.disabled = true;
+        setTimeout(() => {
+          output.innerHTML += "<br><br><strong style='color:#ff0000;'>ACCESS GRANTED. Welcome to U.M.I.S. Core.</strong>";
+          showDetails();
+          
+          // Show AI chat system after successful login
+          setTimeout(() => {
+            securitySystem.style.display = "none";
+            aiSystem.style.display = "block";
+            conversationSuggestion.textContent = "Select a character to begin chatting. Each character has unique knowledge about Umbrella Corporation's activities.";
+          }, 3000);
+          
+        }, 1000);
+      } else {
+        failCount++;
+        accessDenied.textContent = "ACCESS DENIED.";
+        if (failCount >= maxFails) {
+          overrideBtn.style.display = "inline-block";
+        }
+      }
+      passwordInput.value = "";
+    }
+  });
+
+  overrideBtn.addEventListener('click', () => {
+    output.innerHTML += "<br><br>&gt; Override Access granted.";
+    accessDenied.textContent = "";
+    passwordInput.disabled = true;
+    overrideBtn.style.display = "none";
+    output.innerHTML += "<br><br><strong style='color:#ff0000;'>ACCESS GRANTED. Welcome to U.M.I.S. Core.</strong>";
+    showDetails();
+    
+    // Show AI chat system after override
+    setTimeout(() => {
+      securitySystem.style.display = "none";
+      aiSystem.style.display = "block";
+      conversationSuggestion.textContent = "Warning: Security override detected. Select a character to begin chatting, but be aware this session is being monitored.";
+    }, 3000);
+  });
+
+  loadRandomQuestion();
+</script>
+
+</body>
+</html>
