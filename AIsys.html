@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Umbrella Corporation Systems</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background: #111 url('pictures/back3.jpg') center center / cover no-repeat;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      direction: ltr;
+    }
+    
+    [lang="ar"] body {
+      direction: rtl;
+      font-family: 'Tajawal', Arial, sans-serif;
+    }
+
+    h1, h2 {
+      color: #c00;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    /* Language Selector */
+    #languageSelect {
+      position: fixed;
+      top: 20px;
+      right: 50%;
+      transform: translateX(50%);
+      padding: 8px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #c00;
+      color: #eee;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    /* AI Chat System Styles */
+    #aiSystem {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      display: none;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+    }
+
+    #characterSelect {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      gap: 15px;
+    }
+
+    #characterSelect button {
+      margin: 10px;
+      padding: 15px 25px;
+      background: linear-gradient(145deg, #222, #444);
+      border: 1px solid #c00;
+      color: #eee;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 1.1rem;
+      font-weight: bold;
+      min-width: 200px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #characterSelect button:hover {
+      background: linear-gradient(145deg, #333, #555);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(255, 0, 0, 0.4);
+      border-color: #f00;
+    }
+
+    #characterSelect button:active {
+      transform: translateY(1px);
+    }
+
+    #characterSelect button.selected {
+      background: linear-gradient(145deg, #5a1f1f, #7c2929);
+      border-color: #f00;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    }
+
+    #chatContainer {
+      display: none;
+      flex-direction: column;
+      height: 70vh;
+      max-width: 600px;
+      margin: 20px auto 0;
+      border: 1px solid #c00;
+      background: rgba(0,0,0,0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255,0,0,0.3);
+      overflow: hidden;
+    }
+
+    #charHeader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      background: rgba(0,0,0,0.7);
+      border-bottom: 1px solid #c00;
+    }
+
+    #charPhoto img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #c00;
+      object-fit: cover;
+      margin-right: 15px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    #charName {
+      font-size: 1.3rem;
+      color: #c00;
+      font-weight: bold;
+    }
+
+    #chatLog {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      background: rgba(0,0,0,0.7);
+      margin: 10px 0;
+      border-radius: 5px;
+      scrollbar-width: thin;
+      scrollbar-color: #c00 #222;
+    }
+
+    #chatLog::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chatLog::-webkit-scrollbar-track {
+      background: #222;
+    }
+
+    #chatLog::-webkit-scrollbar-thumb {
+      background-color: #c00;
+      border-radius: 10px;
+    }
+
+    #inputArea {
+      display: flex;
+      padding: 10px;
+      background: rgba(0,0,0,0.7);
+      border-top: 1px solid #c00;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #c00;
+      border-radius: 4px;
+      background: #222;
+      color: #eee;
+      transition: all 0.3s;
+    }
+
+    #userInput:focus {
+      outline: none;
+      border-color: #f00;
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+    }
+
+    #sendBtn {
+      padding: 12px 20px;
+      margin-left: 10px;
+      background: linear-gradient(145deg, #5a1f1f, #7c2929);
+      border: none;
+      color: #eee;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s;
+      font-weight: bold;
+    }
+
+    #sendBtn:hover {
+      background: linear-gradient(145deg, #7c2929, #9e3333);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+    }
+
+    #sendBtn:active {
+      transform: translateY(0);
+    }
+
+    /* Topic List */
+    #topicList {
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #ff2200;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 5px;
+      color: #ff0202;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    }
+
+    #topicList h3 {
+      margin-top: 0;
+      color: #f00;
+      font-size: 1.2rem;
+    }
+
+    #topicList ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #topicList li {
+      margin: 5px;
+      padding: 8px 15px;
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #c00;
+      border-radius: 20px;
+      font-style: italic;
+      transition: all 0.3s;
+    }
+
+    #topicList li:hover {
+      background: rgba(255, 0, 0, 0.2);
+      cursor: pointer;
+      transform: translateY(-2px);
+    }
+
+    /* Conversation Suggestion */
+    #conversationSuggestion {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid #ff2200;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 5px;
+      font-style: italic;
+      color: #ff0202;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    }
+
+    /* Message Styles */
+    .message {
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 18px;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-message {
+      background: #5a1f1f;
+      color: #fff;
+      margin-left: auto;
+      border-bottom-right-radius: 5px;
+      text-align: right;
+    }
+
+    .ai-message {
+      background: #333;
+      color: #eee;
+      margin-right: auto;
+      border-bottom-left-radius: 5px;
+      text-align: left;
+    }
+
+    .message-sender {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #f00;
+    }
+
+    /* Security System Styles */
+    #securitySystem {
+      max-width: 800px;
+      margin: 40px auto;
+    }
+
+    #quizContainer, #terminalContainer {
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #000300;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 5px;
+      box-shadow: 0 0 15px #ff2f00 inset;
+    }
+
+    #quizContainer {
+      text-align: center;
+    }
+
+    #quizQuestion {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      color: #ff0d00;
+    }
+
+    .option-btn {
+      display: block;
+      background: transparent;
+      border: 2px solid #ff1900;
+      color: #ff4000;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.3rem;
+      padding: 10px 15px;
+      margin: 10px auto;
+      max-width: 400px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+
+    .option-btn:hover {
+      background: #003300;
+    }
+
+    #timer {
+      font-size: 1.3rem;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ff0000;
+    }
+
+    #passwordDisplay {
+      margin-top: 25px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff0000;
+    }
+
+    #copyBtn {
+      display: none;
+      margin-top: 15px;
+      padding: 8px 15px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.2rem;
+      background: #ff0000;
+      color: black;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff0000;
+      transition: background 0.3s ease;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin: 20px 0;
+      padding: 8px 20px;
+      background-color: #ff0000;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #cc0000;
+      transform: translateX(-5px);
+    }
+
+    #copyBtn:hover {
+      background: #cc0000;
+    }
+
+    #terminalContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #output {
+      white-space: pre-wrap;
+      font-size: 1.2rem;
+      line-height: 1.3;
+      min-height: 200px;
+      color: #ff0000;
+    }
+
+    #passwordInput {
+      margin-top: 10px;
+      width: 100%;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.3rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #ff0000;
+      color: #ff0000;
+      padding: 8px 5px;
+      outline: none;
+      caret-color: #ff0000;
+    }
+
+    #accessDenied {
+      color: #ff0000;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    #overrideBtn {
+      display: none;
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.3rem;
+      background: #ff0000;
+      color: black;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 0 0 8px #ff0000;
+      transition: background 0.3s ease;
+    }
+
+    #overrideBtn:hover {
+      background: #cc0000;
+    }
+
+    /* Mute Button */
+    #mute-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 15px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #c00;
+      color: #eee;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s;
+    }
+
+    #mute-btn:hover {
+      background: rgba(255,0,0,0.3);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      padding: 10px 15px;
+      margin: 10px 0;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      margin: 0 2px;
+      background-color: #c00;
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #characterSelect {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      #characterSelect button {
+        width: 90%;
+      }
+      
+      #chatContainer {
+        height: 60vh;
+      }
+      
+      #languageSelect {
+        right: 20px;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgmusic" autoplay loop muted>
+    <source src="themes/sernety.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <button id="mute-btn">🔊 Mute</button>
+  <select id="languageSelect">
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="it">Italiano</option>
+    <option value="pt">Português</option>
+    <option value="ru">Русский</option>
+    <option value="ar">العربية</option>
+  </select>
+  <a href="index.html" class="back-button">← Back to Main Facility</a>
+
+  <!-- AI Chat System -->
+  <section id="aiSystem">
+    <h1 data-i18n="ai_title">Umbrella Corporation AI Assistant</h1>
+    <div id="conversationSuggestion"></div>
+    <p style="text-align: center;" data-i18n="select_character">Select a character to chat with:</p>
+    <div id="characterSelect">
+      <button data-char="albert" data-i18n="char_albert">Dr. Albert Wesker</button>
+      <button data-char="william" data-i18n="char_william">Dr. William Birkin</button>
+      <button data-char="alex" data-i18n="char_alex">Alex Wesker</button>
+      <button data-char="ozwell" data-i18n="char_ozwell">Dr. Ozwell E. Spencer</button>
+    </div>
+    <div id="topicList"></div>
+    <div id="chatContainer">
+      <div id="charHeader">
+        <div id="charPhoto"></div>
+        <div id="charName"></div>
+      </div>
+      <div id="chatLog"></div>
+      <div id="inputArea">
+        <input type="text" id="userInput" data-i18n-placeholder="ask_question" placeholder="Ask your question..." />
+        <button id="sendBtn" data-i18n="send">Send</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security System -->
+  <section id="securitySystem">
+    <h2 data-i18n="security_title">U.M.I.S - Umbrella Main Intelligence System</h2>
+    <div id="quizContainer" role="main" aria-live="polite">
+      <div id="quizQuestion">Loading question...</div>
+      <div id="optionsContainer" aria-label="Answer options"></div>
+      <div id="timer" aria-live="polite" aria-atomic="true">Time left: 7s</div>
+      <div id="passwordDisplay" aria-live="polite"></div>
+      <button id="copyBtn" aria-label="Copy password button" data-i18n="copy_password">Copy Password</button>
+    </div>
+    <div id="terminalContainer" role="main" aria-live="polite" aria-label="Terminal Access">
+      <div id="output" data-i18n="terminal_welcome">
+        Welcome to U.M.I.S. - Umbrella Main Intelligence System
+        <br>Please enter your security clearance password:
+      </div>
+      <input type="password" id="passwordInput" placeholder="Enter password here..." aria-label="Security password input" data-i18n-placeholder="enter_password" autocomplete="off" />
+      <div id="accessDenied" role="alert"></div>
+      <button id="overrideBtn" aria-label="Override Access button" data-i18n="override_access">Override Access</button>
+    </div>
+  </section>
+
+  <script>
+    // Language translations
+    const translations = {
+      en: {
+        ai_title: "Umbrella Corporation AI Assistant",
+        select_character: "Select a character to chat with:",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Ask your question...",
+        send: "Send",
+        security_title: "U.M.I.S - Umbrella Main Intelligence System",
+        copy_password: "Copy Password",
+        copied: "Copied!",
+        terminal_welcome: "Welcome to U.M.I.S. - Umbrella Main Intelligence System\nPlease enter your security clearance password:",
+        enter_password: "Enter password here...",
+        override_access: "Override Access",
+        back_to_main: "Back to Main Facility",
+        timer: "Time left",
+        answer_option: "Answer option",
+        time_up: "Time's up! Access denied.",
+        correct: "Correct",
+        password_is: "Your temporary password is",
+        wrong_answer: "Wrong answer! Access denied.",
+        password_accepted: "Password accepted. Accessing system...",
+        access_granted: "ACCESS GRANTED. Welcome to U.M.I.S. Core.",
+        user: "User",
+        security_level: "Security Level",
+        last_login: "Last Login",
+        top_secret_files: "Top Secret Files",
+        welcome_back: "Welcome back, Director Wesker.",
+        access_denied: "ACCESS DENIED.",
+        override_granted: "Override Access granted.",
+        select_character_suggestion: "Select a character to begin chatting. Each character has unique knowledge about Umbrella Corporation's activities.",
+        override_warning: "Warning: Security override detected. Select a character to begin chatting, but be aware this session is being monitored.",
+        available_topics: "Available Topics",
+        no_knowledge: "I have little to say on that matter. Please ask about one of my known topics: ",
+        role: "Role",
+        viruses: "Viruses",
+        events: "Events",
+        corporation: "Corporation",
+        projects: "Projects",
+        research: "Research",
+        locations: "Locations",
+        personnel: "Personnel",
+        experiments: "Experiments",
+        weapons: "Bio-Weapons",
+        note: "Note: This AI system contains classified information about Umbrella Corporation. All conversations are monitored and recorded."
+      },
+      es: {
+        ai_title: "Asistente de IA de Umbrella Corporation",
+        select_character: "Selecciona un personaje para chatear:",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Haz tu pregunta...",
+        send: "Enviar",
+        security_title: "U.M.I.S - Sistema de Inteligencia Principal de Umbrella",
+        copy_password: "Copiar Contraseña",
+        copied: "¡Copiado!",
+        terminal_welcome: "Bienvenido a U.M.I.S. - Sistema de Inteligencia Principal de Umbrella\nPor favor, ingrese su contraseña de autorización de seguridad:",
+        enter_password: "Ingrese la contraseña aquí...",
+        override_access: "Acceso de Anulación",
+        back_to_main: "Volver a la Instalación Principal",
+        timer: "Tiempo restante",
+        answer_option: "Opción de respuesta",
+        time_up: "¡Se acabó el tiempo! Acceso denegado.",
+        correct: "Correcto",
+        password_is: "Tu contraseña temporal es",
+        wrong_answer: "¡Respuesta incorrecta! Acceso denegado.",
+        password_accepted: "Contraseña aceptada. Accediendo al sistema...",
+        access_granted: "ACCESO CONCESSO. Bienvenido al núcleo de U.M.I.S.",
+        user: "Usuario",
+        security_level: "Nivel de Seguridad",
+        last_login: "Último Inicio de Sesión",
+        top_secret_files: "Archivos Ultrasecretos",
+        welcome_back: "Bienvenido de nuevo, Director Wesker.",
+        access_denied: "ACCESO DENEGADO.",
+        override_granted: "Acceso de anulación concedido.",
+        select_character_suggestion: "Selecciona un personaje para comenzar a chatear. Cada personaje tiene conocimientos únicos sobre las actividades de Umbrella Corporation.",
+        override_warning: "Advertencia: Se detectó anulación de seguridad. Selecciona un personaje para comenzar a chatear, pero ten en cuenta que esta sesión está siendo monitoreada.",
+        available_topics: "Temas Disponibles",
+        no_knowledge: "Tengo poco que decir sobre ese tema. Por favor, pregunta sobre uno de mis temas conocidos: ",
+        role: "Rol",
+        viruses: "Virus",
+        events: "Eventos",
+        corporation: "Corporación",
+        projects: "Proyectos",
+        research: "Investigación",
+        locations: "Ubicaciones",
+        personnel: "Personal",
+        experiments: "Experimentos",
+        weapons: "Armas Biológicas",
+        note: "Nota: Este sistema de IA contiene información clasificada sobre Umbrella Corporation. Todas las conversaciones son monitoreadas y grabadas."
+      },
+      fr: {
+        ai_title: "Assistant IA de Umbrella Corporation",
+        select_character: "Sélectionnez un personnage pour discuter :",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Posez votre question...",
+        send: "Envoyer",
+        security_title: "U.M.I.S - Système d'Intelligence Principal d'Umbrella",
+        copy_password: "Copier le mot de passe",
+        copied: "Copié !",
+        terminal_welcome: "Bienvenue dans U.M.I.S. - Système d'Intelligence Principal d'Umbrella\nVeuillez entrer votre mot de passe de sécurité :",
+        enter_password: "Entrez le mot de passe ici...",
+        override_access: "Accès de Contournement",
+        back_to_main: "Retour à l'Installation Principale",
+        timer: "Temps restant",
+        answer_option: "Option de réponse",
+        time_up: "Temps écoulé ! Accès refusé.",
+        correct: "Correct",
+        password_is: "Votre mot de passe temporaire est",
+        wrong_answer: "Mauvaise réponse ! Accès refusé.",
+        password_accepted: "Mot de passe accepté. Accès au système...",
+        access_granted: "ACCÈS AUTORISÉ. Bienvenue dans le cœur de U.M.I.S.",
+        user: "Utilisateur",
+        security_level: "Niveau de Sécurité",
+        last_login: "Dernière Connexion",
+        top_secret_files: "Fichiers Top Secrets",
+        welcome_back: "Bon retour, Directeur Wesker.",
+        access_denied: "ACCÈS REFUSÉ.",
+        override_granted: "Accès de contournement autorisé.",
+        select_character_suggestion: "Sélectionnez un personnage pour commencer à discuter. Chaque personnage possède des connaissances uniques sur les activités d'Umbrella Corporation.",
+        override_warning: "Avertissement : Contournement de sécurité détecté. Sélectionnez un personnage pour commencer à discuter, mais sachez que cette session est surveillée.",
+        available_topics: "Sujets Disponibles",
+        no_knowledge: "J'ai peu à dire sur ce sujet. Veuillez poser une question sur l'un de mes sujets connus: ",
+        role: "Rôle",
+        viruses: "Virus",
+        events: "Événements",
+        corporation: "Corporation",
+        projects: "Projets",
+        research: "Recherche",
+        locations: "Emplacements",
+        personnel: "Personnel",
+        experiments: "Expériences",
+        weapons: "Armes Biologiques",
+        note: "Remarque : Ce système d'IA contient des informations classifiées sur Umbrella Corporation. Toutes les conversations sont surveillées et enregistrées."
+      },
+      de: {
+        ai_title: "Umbrella Corporation KI-Assistent",
+        select_character: "Wählen Sie einen Charakter zum Chatten aus:",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Stellen Sie Ihre Frage...",
+        send: "Senden",
+        security_title: "U.M.I.S - Umbrella Hauptintelligenzsystem",
+        copy_password: "Passwort kopieren",
+        copied: "Kopiert!",
+        terminal_welcome: "Willkommen bei U.M.I.S. - Umbrella Hauptintelligenzsystem\nBitte geben Sie Ihr Sicherheitsfreigabepasswort ein:",
+        enter_password: "Passwort hier eingeben...",
+        override_access: "Zugriff überschreiben",
+        back_to_main: "Zurück zur Hauptanlage",
+        timer: "Verbleibende Zeit",
+        answer_option: "Antwortoption",
+        time_up: "Zeit abgelaufen! Zugriff verweigert.",
+        correct: "Korrekt",
+        password_is: "Ihr temporäres Passwort ist",
+        wrong_answer: "Falsche Antwort! Zugriff verweigert.",
+        password_accepted: "Passwort akzeptiert. System wird aufgerufen...",
+        access_granted: "ZUGRIFF GEWÄHRT. Willkommen im U.M.I.S.-Kern.",
+        user: "Benutzer",
+        security_level: "Sicherheitsstufe",
+        last_login: "Letzte Anmeldung",
+        top_secret_files: "Streng geheime Dateien",
+        welcome_back: "Willkommen zurück, Direktor Wesker.",
+        access_denied: "ZUGRIFF VERWEIGERT.",
+        override_granted: "Zugriffsüberschreibung gewährt.",
+        select_character_suggestion: "Wählen Sie einen Charakter aus, um zu chatten. Jeder Charakter hat einzigartige Kenntnisse über die Aktivitäten der Umbrella Corporation.",
+        override_warning: "Warnung: Sicherheitsüberschreibung erkannt. Wählen Sie einen Charakter aus, um zu chatten, aber beachten Sie, dass diese Sitzung überwacht wird.",
+        available_topics: "Verfügbare Themen",
+        no_knowledge: "Ich habe wenig dazu zu sagen. Bitte fragen Sie nach einem meinen bekannten Themen: ",
+        role: "Rolle",
+        viruses: "Viren",
+        events: "Ereignisse",
+        corporation: "Korporation",
+        projects: "Projekte",
+        research: "Forschung",
+        locations: "Standorte",
+        personnel: "Personal",
+        experiments: "Experimente",
+        weapons: "Biowaffen",
+        note: "Hinweis: Dieses KI-System enthält klassifizierte Informationen über die Umbrella Corporation. Alle Gespräche werden überwacht und aufgezeichnet."
+      },
+      it: {
+        ai_title: "Assistente IA di Umbrella Corporation",
+        select_character: "Seleziona un personaggio con cui chattare:",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Fai la tua domanda...",
+        send: "Invia",
+        security_title: "U.M.I.S - Sistema di Intelligenza Principale di Umbrella",
+        copy_password: "Copia Password",
+        copied: "Copiato!",
+        terminal_welcome: "Benvenuto in U.M.I.S. - Sistema di Intelligenza Principale di Umbrella\nInserisci la tua password di autorizzazione di sicurezza:",
+        enter_password: "Inserisci la password qui...",
+        override_access: "Accesso di Sovrascrittura",
+        back_to_main: "Torna alla Struttura Principale",
+        timer: "Tempo rimanente",
+        answer_option: "Opzione di risposta",
+        time_up: "Tempo scaduto! Accesso negato.",
+        correct: "Corretto",
+        password_is: "La tua password temporanea è",
+        wrong_answer: "Risposta sbagliata! Accesso negato.",
+        password_accepted: "Password accettata. Accesso al sistema...",
+        access_granted: "ACCESSO CONCESSO. Benvenuto nel nucleo di U.M.I.S.",
+        user: "Utente",
+        security_level: "Livello di Sicurezza",
+        last_login: "Ultimo Accesso",
+        top_secret_files: "File Top Secret",
+        welcome_back: "Bentornato, Direttore Wesker.",
+        access_denied: "ACCESSO NEGATO.",
+        override_granted: "Accesso di sovrascrittura concesso.",
+        select_character_suggestion: "Seleziona un personaggio per iniziare a chattare. Ogni personaggio ha conoscenze uniche sulle attività di Umbrella Corporation.",
+        override_warning: "Attenzione: Rilevato sovrascrittura di sicurezza. Seleziona un personaggio per iniziare a chattare, ma sappi che questa sessione è monitorata.",
+        available_topics: "Temi Disponibili",
+        no_knowledge: "Ho poco da dire su quell'argomento. Per favore, chiedi di uno dei miei temi conosciuti: ",
+        role: "Ruolo",
+        viruses: "Virus",
+        events: "Eventi",
+        corporation: "Corporazione",
+        projects: "Progetti",
+        research: "Ricerca",
+        locations: "Ubicazioni",
+        personnel: "Personale",
+        experiments: "Esperimenti",
+        weapons: "Armi Biologiche",
+        note: "Nota: Questo sistema IA contiene informazioni classificate su Umbrella Corporation. Tutte le conversazioni sono monitorate e registrate."
+      },
+      pt: {
+        ai_title: "Assistente de IA da Umbrella Corporation",
+        select_character: "Selecione um personagem para conversar:",
+        char_albert: "Dr. Albert Wesker",
+        char_william: "Dr. William Birkin",
+        char_alex: "Alex Wesker",
+        char_ozwell: "Dr. Ozwell E. Spencer",
+        ask_question: "Faça sua pergunta...",
+        send: "Enviar",
+        security_title: "U.M.I.S - Sistema de Inteligência Principal da Umbrella",
+        copy_password: "Copiar Senha",
+        copied: "Copiado!",
+        terminal_welcome: "Bem-vindo ao U.M.I.S. - Sistema de Inteligência Principal da Umbrella\nPor favor, insira sua senha de autorização de segurança:",
+        enter_password: "Insira a senha aqui...",
+        override_access: "Acesso de Substituição",
+        back_to_main: "Voltar para a Instalação Principal",
+        timer: "Tempo restante",
+        answer_option: "Opção de resposta",
+        time_up: "Tempo esgotado! Acesso negado.",
+        correct: "Correto",
+        password_is: "Sua senha temporária é",
+        wrong_answer: "Resposta errada! Acesso negado.",
+        password_accepted: "Senha aceita. Acessando o sistema...",
+        access_granted: "ACESSO CONCEDIDO. Bem-vindo ao núcleo do U.M.I.S.",
+        user: "Usuário",
+        security_level: "Nível de Segurança",
+        last_login: "Último Login",
+        top_secret_files: "Arquivos Ultrassecretos",
+        welcome_back: "Bem-vindo de volta, Diretor Wesker.",
+        access_denied: "ACESSO NEGADO.",
+        override_granted: "Acesso de substituição concedido.",
+        select_character_suggestion: "Selecione um personagem para começar a conversar. Cada personagem tem conhecimentos únicos sobre as atividades da Umbrella Corporation.",
+        override_warning: "Aviso: Substituição de segurança detectada. Selecione um personagem para começar a conversar, mas saiba que esta sessão está sendo monitorada.",
+        available_topics: "Tópicos Disponíveis",
+        no_knowledge: "Tenho pouco a dizer sobre esse assunto. Por favor, pergunte sobre um dos meus tópicos conhecidos: ",
+        role: "Papel",
+        viruses: "Vírus",
+        events: "Eventos",
+        corporation: "Corporação",
+        projects: "Projetos",
+        research: "Pesquisa",
+        locations: "Localizações",
+        personnel: "Pessoal",
+        experiments: "Experimentos",
+        weapons: "Armas Biológicas",
+        note: "Nota: Este sistema de IA contém informações classificadas sobre a Umbrella Corporation. Todas as conversas são monitoradas e gravadas."
+      },
+      ru: {
+        ai_title: "ИИ-помощник корпорации Umbrella",
+        select_character: "Выберите персонажа для общения:",
+        char_albert: "Доктор Альберт Вескер",
+        char_william: "Доктор Уильям Биркин",
+        char_alex: "Алекс Вескер",
+        char_ozwell: "Доктор Озвелл Е. Спенсер",
+        ask_question: "Задайте свой вопрос...",
+        send: "Отправить",
+        security_title: "U.M.I.S - Главная разведывательная система Umbrella",
+        copy_password: "Скопировать пароль",
+        copied: "Скопировано!",
+        terminal_welcome: "Добро пожаловать в U.M.I.S. - Главная разведывательная система Umbrella\nПожалуйста, введите ваш пароль безопасности:",
+        enter_password: "Введите пароль здесь...",
+        override_access: "Переопределение доступа",
+        back_to_main: "Вернуться в основное учреждение",
+        timer: "Оставшееся время",
+        answer_option: "Вариант ответа",
+        time_up: "Время истекло! Доступ запрещён.",
+        correct: "Правильно",
+        password_is: "Ваш временный пароль",
+        wrong_answer: "Неправильный ответ! Доступ запрещён.",
+        password_accepted: "Пароль принят. Доступ к системе...",
+        access_granted: "ДОСТУП РАЗРЕШЁН. Добро пожаловать в ядро U.M.I.S.",
+        user: "Пользователь",
+        security_level: "Уровень безопасности",
+        last_login: "Последний вход",
+        top_secret_files: "Сверхсекретные файлы",
+        welcome_back: "С возвращением, директор Вескер.",
+        access_denied: "ДОСТУП ЗАПРЕЩЁН.",
+        override_granted: "Переопределение доступа разрешено.",
+        select_character_suggestion: "Выберите персонажа, чтобы начать общение. Каждый персонаж обладает уникальными знаниями о деятельности корпорации Umbrella.",
+        override_warning: "Предупреждение: Обнаружено переопределение безопасности. Выберите персонажа, чтобы начать общение, но имейте в виду, что эта сессия отслеживается.",
+        available_topics: "Доступные темы",
+        no_knowledge: "Мне нечего сказать по этому поводу. Пожалуйста, спросите об одной из моих известных тем: ",
+        role: "Роль",
+        viruses: "Вирусы",
+        events: "События",
+        corporation: "Корпорация",
+        projects: "Проекты",
+        research: "Исследования",
+        locations: "Местоположения",
+        personnel: "Персонал",
+        experiments: "Эксперименты",
+        weapons: "Биооружие",
+        note: "Примечание: Эта ИИ-система содержит засекреченную информацию о корпорации Umbrella. Все разговоры отслеживаются и записываются."
+      },
+      ar: {
+        ai_title: "مساعد الذكاء الاصطناعي لشركة أمبريلا",
+        select_character: "اختر شخصية للدردشة معها:",
+        char_albert: "د. ألبرت ويسكر",
+        char_william: "د. ويليام بيركين",
+        char_alex: "أليكس ويسكر",
+        char_ozwell: "د. أوزويل إي. سبنسر",
+        ask_question: "اطرح سؤالك...",
+        send: "إرسال",
+        security_title: "يو.إم.آي.إس - نظام الاستخبارات الرئيسي لأمريلا",
+        copy_password: "نسخ كلمة المرور",
+        copied: "تم النسخ!",
+        terminal_welcome: "مرحبًا بكم في يو.إم.آي.إس - نظام الاستخبارات الرئيسي لأمريلا\nيرجى إدخال كلمة مرور التفويض الأمني الخاصة بك:",
+        enter_password: "أدخل كلمة المرور هنا...",
+        override_access: "تجاوز الوصول",
+        back_to_main: "العودة إلى المنشأة الرئيسية",
+        timer: "الوقت المتبقي",
+        answer_option: "خيار الإجابة",
+        time_up: "انتهى الوقت! تم رفض الوصول.",
+        correct: "صحيح",
+        password_is: "كلمة المرور المؤقتة الخاصة بك هي",
+        wrong_answer: "إجابة خاطئة! تم رفض الوصول.",
+        password_accepted: "تم قبول كلمة المرور. يتم الوصول إلى النظام...",
+        access_granted: "تم منح الوصول. مرحبًا بك في نواة يو.إم.آي.إس.",
+        user: "المستخدم",
+        security_level: "مستوى الأمان",
+        last_login: "آخر تسجيل دخول",
+        top_secret_files: "ملفات سرية للغاية",
+        welcome_back: "مرحبًا بعودتك، المدير ويسكر.",
+        access_denied: "تم رفض الوصول.",
+        override_granted: "تم منح تجاوز الوصول.",
+        select_character_suggestion: "اختر شخصية لتبدأ الدردشة. كل شخصية لديها معرفة فريدة بأنشطة شركة أمبريلا.",
+        override_warning: "تحذير: تم اكتشاف تجاوز الأمان. اختر شخصية لتبدأ الدردشة، لكن اعلم أن هذه الجلسة يتم مراقبتها.",
+        available_topics: "المواضيع المتاحة",
+        no_knowledge: "لدي القليل لأقوله حول هذا الموضوع. من فضلك، اسأل عن أحد مواضيعي المعروفة: ",
+        role: "الدور",
+        viruses: "الفيروسات",
+        events: "الأحداث",
+        corporation: "الشركة",
+        projects: "المشاريع",
+        research: "البحث",
+        locations: "المواقع",
+        personnel: "الموظفين",
+        experiments: "التجارب",
+        weapons: "الأسلحة البيولوجية",
+        note: "ملاحظة: يحتوي نظام الذكاء الاصطناعي هذا على معلومات سرية حول شركة أمبريلا. يتم مراقبة وتسجيل جميع المحادثات."
+      }
+    };
+
+    // Audio control
+    const audio = document.getElementById('bgmusic');
+    const muteBtn = document.getElementById('mute-btn');
+    const savedMuteState = localStorage.getItem('audioMuted');
+    if (savedMuteState === 'true') {
+      audio.muted = true;
+      muteBtn.innerHTML = '🔇 Unmute';
+    } else {
+      audio.muted = false;
+      muteBtn.innerHTML = '🔊 Mute';
+    }
+
+    muteBtn.addEventListener('click', () => {
+      audio.muted = !audio.muted;
+      muteBtn.innerHTML = audio.muted ? '🔇 Unmute' : '🔊 Mute';
+      localStorage.setItem('audioMuted', audio.muted);
+      if (!audio.muted) audio.play().catch(e => console.log("Audio play failed:", e));
+    });
+
+    // Language handling
+    const languageSelect = document.getElementById('languageSelect');
+    let currentLang = 'en';
+
+    function updateLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.body.setAttribute('lang', lang);
+      
+      // Update all translatable elements
+      document.querySelectorAll('[data-i18n]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          elem.textContent = translations[lang][key];
+        }
+      });
+      
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+          elem.placeholder = translations[lang][key];
+        }
+      });
+      
+      // Update back button
+      if (translations[lang] && translations[lang].back_to_main) {
+        document.querySelector('.back-button').textContent = `← ${translations[lang].back_to_main}`;
+      }
+      
+      // Update character display if a character is selected
+      if (currentCharKey) {
+        updateCharacterDisplay();
+        updateTopicList();
+      } else {
+        conversationSuggestion.textContent = translations[lang]?.select_character_suggestion || 'Select a character to begin chatting.';
+      }
+    }
+
+    languageSelect.addEventListener('change', (e) => {
+      updateLanguage(e.target.value);
+    });
+
+    // AI Chat System
+    const characters = {
+      albert: {
+        name: {
+          en: "Dr. Albert Wesker",
+          es: "Dr. Alberto Wesker",
+          fr: "Dr. Albert Wesker",
+          de: "Dr. Albert Wesker",
+          it: "Dr. Albert Wesker",
+          pt: "Dr. Alberto Wesker",
+          ru: "Доктор Альберт Вескер",
+          ar: "د. ألبرت ويسكر"
+        },
+        photo: "pictures/wisker(2).jpg",
+        suggestions: {
+          en: "Ask about my role in S.T.A.R.S., the Uroboros virus, or key events like the mansion incident.",
+          es: "Pregunta sobre mi rol en S.T.A.R.S., el virus Uroboros o eventos clave como el incidente de la mansión.",
+          fr: "Demandez-moi sur mon rôle dans S.T.A.R.S., le virus Uroboros ou des événements clés comme l'incident du manoir.",
+          de: "Fragen Sie nach meiner Rolle bei S.T.A.R.S., dem Uroboros-Virus oder Schlüsslereignissen wie dem Vorfall im Anwesen.",
+          it: "Chiedimi del mio ruolo in S.T.A.R.S., del virus Uroboros o di eventi chiave dell'incidente della villa.",
+          pt: "Pergunte sobre meu papel no S.T.A.R.S., o vírus Uroboros ou eventos-chave como o incidente da mansão.",
+          ru: "Спросите о моей роли в S.T.A.R.S., вирусе Уроборос или ключевых событиях, таких как инцидент в особняке.",
+          ar: "اسأل عن دوري في S.T.A.R.S.، أو فيروس أوروبوروس، أو الأحداث الرئيسية مثل حادثة القصر."
+        },
+        topics: ["role", "virus", "event", "projects", "research", "locations", "personnel", "experiments", "weapons"]
+      },
+      william: {
+        name: {
+          en: "Dr. William Birkin",
+          es: "Dr. Guillermo Birkin",
+          fr: "Dr. William Birkin",
+          de: "Dr. Wilhelm Birkin",
+          it: "Dr. William Birkin",
+          pt: "Dr. Guilherme Birkin",
+          ru: "Доктор Уильям Биркин",
+          ar: "د. ويليام بيركين"
+        },
+        photo: "pictures/will.jpg",
+        suggestions: {
+          en: "Ask about my role in creating the G-virus, the Raccoon City outbreak, or related events.",
+          es: "Pregunta sobre mi rol en la creación del virus G, el brote de Raccoon City o eventos relacionados.",
+          fr: "Demandez-moi sur mon rôle dans la création du virus G, ou l'épidémie de Raccoon City.",
+          de: "Fragen Sie nach meiner Rolle bei der Schaffung des G-Virus, dem Ausbruch in Raccoon City.",
+          it: "Chiedimi del mio ruolo nella creazione del virus G, dell'epidemia di Raccoon City.",
+          pt: "Pergunte sobre meu papel na criação do vírus G, ou o surto de Raccoon City.",
+          ru: "Спросите о моей роли в создании вируса G, или вспышке в Раккун-Сити.",
+          ar: "اسأل عن دوري في إنشاء فيروس G، أو تفشي راكون سيتي."
+        },
+        topics: ["role", "virus", "event", "research", "locations", "experiments", "weapons"]
+      },
+      alex: {
+        name: {
+          en: "Alex Wesker",
+          es: "Alex Wesker",
+          fr: "Alex Wesker",
+          de: "Alex Wesker",
+          it: "Alex Wesker",
+          pt: "Alex Wesker",
+          ru: "Алекс Вескер",
+          ar: "أليكس ويسكر"
+        },
+        photo: "pictures/alexwisker.jpg",
+        suggestions: {
+          en: "Ask about my role in mold virus experiments or events on Sejm Island.",
+          es: "Pregunta sobre mi rol en los experimentos con el virus del moho o eventos en la isla de Sejm.",
+          fr: "Demandez-moi sur mon rôle dans les expériences sur le virus de la moisissure ou les événements sur l'île de Sejm.",
+          de: "Fragen Sie nach meiner Rolle bei Experimenten mit dem Schimmelvirus oder Ereignissen auf der Insel Sejm.",
+          it: "Chiedimi del mio ruolo negli esperimenti sul virus della muffa o degli eventi sull'isola di Sejm.",
+          pt: "Pergunte sobre meu papel nos experimentos com o vírus do mofo ou eventos na ilha de Sejm.",
+          ru: "Спросите о моей роли в экспериментах с вирусом плесени или событиях на острове Сейм.",
+          ar: "اسأل عن دوري في تجارب فيروس العفن أو الأحداث في جزيرة سيجم."
+        },
+        topics: ["role", "virus", "event", "research", "locations", "experiments"]
+      },
+      ozwell: {
+        name: {
+          en: "Dr. Ozwell E. Spencer",
+          es: "Dr. Ozwell E. Spencer",
+          fr: "Dr. Ozwell E. Spencer",
+          de: "Dr. Ozwell E. Spencer",
+          it: "Dr. Ozwell E. Spencer",
+          pt: "Dr. Ozwell E. Spencer",
+          ru: "Доктор Озвелл Е. Спенсер",
+          ar: "د. أوزويل إي. سبنسر"
+        },
+        photo: "pictures/Dr. Ozwell E. Spencer.jpg",
+        suggestions: {
+          en: "Ask about my role in founding Umbrella Corporation or its vision for human evolution.",
+          es: "Pregunta sobre mi rol en la fundación de Umbrella Corporation o su visión para la evolución humana.",
+          fr: "Demandez-moi sur mon rôle dans la fondation d'Umbrella Corporation ou sa vision de l'évolution humaine.",
+          de: "Fragen Sie nach meiner Rolle bei der Gründung der Umbrella Corporation oder ihrer Vision für die menschliche Evolution.",
+          it: "Chiedimi del mio ruolo nella fondazione della Umbrella Corporation o della sua visione per l'evoluzione umana.",
+          pt: "Pergunte sobre meu papel na fundação da Umbrella Corporation ou sua visão para a evolução humana.",
+          ru: "Спросите о моей роли в основании корпорации Umbrella или её видении эволюции человека.",
+          ar: "اسأل عن دوري في تأسيس شركة أمبريلا أو رؤيتها لتطور الإنسان."
+        },
+        topics: ["role", "corporation", "projects", "research", "locations", "personnel"]
+      }
+    };
+
+    // Simulated ChatGPT-like knowledge base for Resident Evil
+    const residentEvilKnowledge = {
+      "role": {
+        albert: {
+          en: "As Albert Wesker, I was the mastermind behind the S.T.A.R.S. betrayal in 1998, using my position to advance Umbrella's bioweapons agenda. My role evolved into leading global bioengineering projects, culminating in my Uroboros plan to reshape humanity. Want to know more about my S.T.A.R.S. strategy or later ambitions?",
+          es: "Como Albert Wesker, fui el cerebro detrás de la traición a S.T.A.R.S. en 1998, usando mi posición para avanzar en la agenda de armas biológicas de Umbrella. Mi rol evolucionó hacia liderar proyectos globales de bioingeniería, culminando en mi plan Uroboros para remodelar la humanidad. ¿Quieres saber más sobre mi estrategia en S.T.A.R.S. o mis ambiciones posteriores?",
+          fr: "En tant qu'Albert Wesker, j'étais le cerveau derrière la trahison de S.T.A.R.S. en 1998, utilisant ma position pour faire avancer l'agenda des armes biologiques d'Umbrella. Mon rôle a évolué vers la direction de projets mondiaux de bio-ingénierie, aboutissant à mon plan Uroboros pour remodeler l'humanité. Voulez-vous en savoir plus sur ma stratégie S.T.A.R.S. ou mes ambitions ultérieures ?",
+          de: "Als Albert Wesker war ich 1998 der Kopf hinter dem Verrat an S.T.A.R.S. und nutzte meine Position, um Umbrellas Biowaffen-Agenda voranzutreiben. Meine Rolle entwickelte sich weiter und ich leitete globale Bioengineering-Projekte, die in meinem Uroboros-Plan gipfelten, um die Menschheit neu zu gestalten. Möchten Sie mehr über meine S.T.A.R.S.-Strategie oder spätere Ambitionen erfahren?",
+          it: "Come Albert Wesker, fui la mente dietro il tradimento di S.T.A.R.S. nel 1998, usando la mia posizione per promuovere l'agenda delle armi biologiche di Umbrella. Il mio ruolo si evolse verso la guida di progetti globali di bioingegneria, culminando nel mio piano Uroboros per rimodellare l'umanità. Vuoi sapere di più sulla mia strategia S.T.A.R.S. o sulle mie ambizioni successive?",
+          pt: "Como Albert Wesker, fui o mentor da traição do S.T.A.R.S. em 1998, usando minha posição para avançar na agenda de armas biológicas da Umbrella. Meu papel evoluiu para liderar projetos globais de bioengenharia, culminando no meu plano Uroboros para remodelar a humanidade. Quer saber mais sobre minha estratégia S.T.A.R.S. ou ambições posteriores?",
+          ru: "Как Альберт Вескер, я был организатором предательства S.T.A.R.S. в 1998 году, используя своё положение для продвижения повестки биологического оружия Umbrella. Моя роль эволюционировала до руководства глобальными проектами биоинженерии, кульминацией которых стал план Уробороса по перестройке человечества. Хотите узнать больше о моей стратегии S.T.A.R.S. или о последующих амбициях?",
+          ar: "بصفتي ألبرت ويسكر، كنت العقل المدبر وراء خيانة S.T.A.R.S. في عام 1998، مستخدمًا منصبي لتعزيز أجندة الأسلحة البيولوجية لأمريلا. تطور دوري لقيادة مشاريع هندسة حيوية عالمية، وبلغ ذروته في خطة أوروبوروس لإعادة تشكيل البشرية. هل تريد معرفة المزيد عن استراتيجيتي في S.T.A.R.S. أو طموحاتي اللاحقة؟"
+        },
+        william: {
+          en: "As William Birkin, my role was as a lead virologist at Umbrella, creating the T-virus and G-virus. My obsession with the G-virus led to my downfall during the 1998 Raccoon City incident, where I mutated after self-experimentation. Curious about my contributions to Umbrella’s viral research?",
+          es: "Como William Birkin, mi rol fue como virólogo líder en Umbrella, creando el virus T y el virus G. Mi obsesión con el virus G llevó a mi caída durante el incidente de Raccoon City en 1998, donde muté tras autoexperimentación. ¿Curioso sobre mis contribuciones a la investigación viral de Umbrella?",
+          fr: "En tant que William Birkin, mon rôle était celui de virologue principal chez Umbrella, créant le virus T et le virus G. Mon obsession pour le virus G a conduit à ma chute lors de l'incident de Raccoon City en 1998, où j'ai muté après auto-expérimentation. Curieux de mes contributions à la recherche virale d'Umbrella ?",
+          de: "Als William Birkin war meine Rolle die eines führenden Virologen bei Umbrella, wo ich den T-Virus und den G-Virus erschuf. Meine Besessenheit vom G-Virus führte zu meinem Untergang während des Vorfalls in Raccoon City 1998, wo ich nach Selbstexperimenten mutierte. Neugierig auf meine Beiträge zur Virusforschung von Umbrella?",
+          it: "Come William Birkin, il mio ruolo era quello di virologo capo presso Umbrella, creando il virus T e il virus G. La mia ossessione per il virus G portò alla mia rovina durante l'incidente di Raccoon City nel 1998, dove mutai dopo auto-sperimentazione. Curioso dei miei contributi alla ricerca virale di Umbrella?",
+          pt: "Como William Birkin, meu papel foi como virologista líder na Umbrella, criando o vírus T e o vírus G. Minha obsessão pelo vírus G levou à minha queda durante o incidente de Raccoon City em 1998, onde mutei após autoexperimentação. Curioso sobre minhas contribuições para a pesquisa viral da Umbrella?",
+          ru: "Как Уильям Биркин, моя роль заключалась в том, чтобы быть ведущим вирусологом в Umbrella, создавая вирусы T и G. Моя одержимость вирусом G привела к моему падению во время инцидента в Раккун-Сити в 1998 году, где я мутировал после экспериментов на себе. Интересуетесь моими вкладами в вирусные исследования Umbrella?",
+          ar: "بصفتي ويليام بيركين، كان دوري كعالم فيروسات رائد في أمبريلا، حيث صنعت فيروس T وفيروس G. أدت هوسي بفيروس G إلى سقوطي خلال حادثة راكون سيتي في عام 1998، حيث تحور بعد تجارب على نفسي. هل أنت مهتم بمساهماتي في أبحاث الفيروسات لأمريلا؟"
+        },
+        alex: {
+          en: "As Alex Wesker, my role was to lead Umbrella’s mold virus experiments, aiming for immortality via a hive-mind. My work on Sejm Island in the 2000s pushed the boundaries of human consciousness. Want to explore my motivations or experimental methods?",
+          es: "Como Alex Wesker, mi rol fue liderar los experimentos con el virus del moho de Umbrella, buscando la inmortalidad a través de una mente colmena. Mi trabajo en la isla de Sejm en los 2000s empujó los límites de la conciencia humana. ¿Quieres explorar mis motivaciones o métodos experimentales?",
+          fr: "En tant qu'Alex Wesker, mon rôle était de diriger les expériences sur le virus de la moisissure d'Umbrella, visant l'immortalité via une conscience collective. Mon travail sur l'île de Sejm dans les années 2000 a repoussé les limites de la conscience humaine. Voulez-vous explorer mes motivations ou méthodes expérimentales ?",
+          de: "Als Alex Wesker war meine Rolle, die Experimente mit dem Schimmelvirus von Umbrella zu leiten, mit dem Ziel der Unsterblichkeit durch einen Schwarmgeist. Meine Arbeit auf der Insel Sejm in den 2000ern sprengte die Grenzen des menschlichen Bewusstseins. Möchten Sie meine Motivationen oder experimentellen Methoden erkunden?",
+          it: "Come Alex Wesker, il mio ruolo era guidare gli esperimenti sul virus della muffa di Umbrella, mirando all'immortalità tramite una mente alveare. Il mio lavoro sull'isola di Sejm negli anni 2000 ha spinto i confini della coscienza umana. Vuoi esplorare le mie motivazioni o metodi sperimentali?",
+          pt: "Como Alex Wesker, meu papel foi liderar os experimentos com o vírus do mofo da Umbrella, buscando a imortalidade por meio de uma mente coletiva. Meu trabalho na ilha de Sejm nos anos 2000 ampliou os limites da consciência humana. Quer explorar minhas motivações ou métodos experimentais?",
+          ru: "Как Алекс Вескер, моя роль заключалась в руководстве экспериментами с вирусом плесени Umbrella, направленных на достижение бессмертия через коллективный разум. Моя работа на острове Сейм в 2000-х годах раздвинула границы человеческого сознания. Хотите изучить мои мотивы или экспериментальные методы?",
+          ar: "بصفتي أليكس ويسكر، كان دوري قيادة تجارب فيروس العفن لأمريلا، بهدف الخلود عبر عقل جماعي. عملي في جزيرة سيجم في العقد الأول من القرن الحادي والعشرين دفع حدود الوعي البشري. هل تريد استكشاف دوافعي أو طرقي التجريبية؟"
+        },
+        ozwell: {
+          en: "As Ozwell E. Spencer, my role was co-founding Umbrella Corporation to pursue human evolution through viral engineering. I shaped its vision and oversaw projects like the T-virus. Interested in my philosophy or Umbrella’s early days?",
+          es: "Como Ozwell E. Spencer, mi rol fue cofundar Umbrella Corporation para perseguir la evolución humana a través de la ingeniería viral. Moldeé su visión y supervisé proyectos como el virus T. ¿Interesado en mi filosofía o los primeros días de Umbrella?",
+          fr: "En tant qu'Ozwell E. Spencer, mon rôle était de cofonder Umbrella Corporation pour poursuivre l'évolution humaine par l'ingénierie virale. J'ai façonné sa vision et supervisé des projets comme le virus T. Intéressé par ma philosophie ou les premiers jours d'Umbrella ?",
+          de: "Als Ozwell E. Spencer war meine Rolle, die Umbrella Corporation mitzugründen, um die menschliche Evolution durch virale Ingenieurskunst zu verfolgen. Ich prägte ihre Vision und überwachte Projekte wie den T-Virus. Interessiert an meiner Philosophie oder den Anfängen von Umbrella?",
+          it: "Come Ozwell E. Spencer, il mio ruolo fu cofondare la Umbrella Corporation per perseguire l'evoluzione umana attraverso l'ingegneria virale. Ho plasmato la sua visione e supervisionato progetti come il virus T. Interessato alla mia filosofia o ai primi giorni di Umbrella?",
+          pt: "Como Ozwell E. Spencer, meu papel foi cofundar a Umbrella Corporation para perseguir a evolução humana por meio da engenharia viral. Eu moldei sua visão e supervisei projetos como o vírus T. Interessado na minha filosofia ou nos primeiros dias da Umbrella?",
+          ru: "Как Озвелл Е. Спенсер, моя роль заключалась в соосновании корпорации Umbrella для достижения эволюции человека посредством вирусной инженерии. Я сформировал её видение и курировал проекты, такие как вирус T. Интересуетесь моей философией или ранними днями Umbrella?",
+          ar: "بصفتي أوزويل إي. سبنسر، كان دوري تأسيس شركة أمبريلا لمتابعة تطور الإنسان من خلال الهندسة الفيروسية. شكلت رؤيتها وراقبت مشاريع مثل فيروس T. هل أنت مهتم بفلسفتي أو الأيام الأولى لأمريلا؟"
+        }
+      },
+      "virus": {
+        albert: {
+          en: "The Uroboros virus was my creation, designed to selectively evolve humanity by bonding with superior DNA. Unlike the T-virus's chaotic mutations, Uroboros was precise but thwarted by Chris Redfield in 2009. Want to discuss its science or my vision for it?",
+          es: "El virus Uroboros fue mi creación, diseñado para evolucionar selectivamente a la humanidad uniéndose al ADN superior. A diferencia de las mutaciones caóticas del virus T, Uroboros era preciso pero fue frustrado por Chris Redfield en 2009. ¿Quieres discutir su ciencia o mi visión para él?",
+          fr: "Le virus Uroboros était ma création, conçu pour faire évoluer sélectivement l'humanité en se liant à un ADN supérieur. Contrairement aux mutations chaotiques du virus T, Uroboros était précis mais contrecarré par Chris Redfield en 2009. Voulez-vous discuter de sa science ou de ma vision pour lui ?",
+          de: "Der Uroboros-Virus war meine Kreation, entwickelt, um die Menschheit selektiv zu evolutionieren, indem er sich mit überlegenem DNA verbindet. Im Gegensatz zu den chaotischen Mutationen des T-Virus war Uroboros präzise, wurde aber 2009 von Chris Redfield vereitelt. Möchten Sie über seine Wissenschaft oder meine Vision dafür diskutieren?",
+          it: "Il virus Uroboros era la mia creazione, progettato per far evolvere selettivamente l'umanità legandosi al DNA superiore. A differenza delle mutazioni caotiche del virus T, Uroboros era preciso ma sventato da Chris Redfield nel 2009. Vuoi discutere della sua scienza o della mia visione per esso?",
+          pt: "O vírus Uroboros foi minha criação, projetado para evoluir seletivamente a humanidade ao se unir ao DNA superior. Diferente das mutações caóticas do vírus T, o Uroboros era preciso, mas foi frustrado por Chris Redfield em 2009. Quer discutir sua ciência ou minha visão para ele?",
+          ru: "Вирус Уроборос был моим созданием, предназначенным для селективной эволюции человечества путём соединения с превосходящей ДНК. В отличие от хаотичных мутаций вируса T, Уроборос был точен, но был сорван Крисом Редфилдом в 2009 году. Хотите обсудить его науку или моё видение?",
+          ar: "كان فيروس أوروبوروس من صنعي، مصممًا لتطوير البشرية انتخابيًا من خلال الارتباط بـ DNA متعال. على عكس التحولات الفوضوية لفيروس T، كان أوروبوروس دقيقًا ولكنه أُحبط بواسطة كريس ريدفيلد في عام 2009. هل تريد مناقشة علمه أو رؤيتي له؟"
+        },
+        william: {
+          en: "I developed the G-virus, a step beyond the T-virus, aiming for rapid cellular regeneration. Its instability caused my monstrous forms during the 1998 Raccoon City outbreak. Want to learn about its creation process or its effects?",
+          es: "Desarrollé el virus G, un paso más allá del virus T, buscando la regeneración celular rápida. Su inestabilidad causó mis formas monstruosas durante el brote de Raccoon City en 1998. ¿Quieres aprender sobre su proceso de creación o sus efectos?",
+          fr: "J'ai développé le virus G, une avancée au-delà du virus T, visant la régénération cellulaire rapide. Son instabilité a causé mes formes monstrueuses lors de l'épidémie de Raccoon City en 1998. Voulez-vous en savoir plus sur son processus de création ou ses effets?",
+          de: "Ich entwickelte den G-Virus, einen Schritt über den T-Virus hinaus, der auf schnelle Zellregenerierung abzielte. Seine Instabilität verursachte meine monströsen Formen während des Ausbruchs in Raccoon City 1998. Möchten Sie mehr über den Entwicklungsprozess oder seine Wirkungen erfahren?",
+          it: "Ho sviluppato il virus G, un passo oltre il virus T, mirando alla rigenerazione cellulare rapida. La sua instabilità ha causato le mie forme mostruose durante l'epidemia di Raccoon City nel 1998. Vuoi saperne di più sul processo di creazione o sui suoi effetti?",
+          pt: "Desenvolvi o vírus G, um avanço além do vírus T, visando a regeneração celular rápida. Sua instabilidade causou minhas formas monstruosas durante o surto de Raccoon City em 1998. Quer saber mais sobre o processo de criação ou seus efeitos?",
+          ru: "Я разработал вирус G — шаг за пределы вируса T, направленный на быструю регенерацию клеток. Его нестабильность вызвала мои чудовищные формы во время вспышки в Раккун-Сити в 1998 году. Хотите узнать больше о процессе его создания или его эффектах?",
+          ar: "طورت فيروس G، خطوة تتجاوز فيروس T، بهدف التجديد الخلوي السريع. تسبب عدم استقراره في أشكالي الوحشية خلال تفشي راكون سيتي في عام 1998. هل تريد معرفة المزيد عن عملية إنشائه أو آثاره؟"
+        },
+        alex: {
+          en: "The mold virus was my path to immortality, controlling organic matter to form a hive-mind. My Sejm Island experiments pushed its potential, though my plans were disrupted. Interested in the mold's properties or my experimental vision?",
+          es: "El virus del moho fue mi camino hacia la inmortalidad, controlando la materia orgánica para formar una mente colmena. Mis experimentos en la isla de Sejm impulsaron su potencial, aunque mis planes fueron interrumpidos. ¿Interesado en las propiedades del moho o mi visión experimental?",
+          fr: "Le virus de la moisissure était ma voie vers l'immortalité, contrôlant la matière organique pour former une conscience collective. Mes expériences sur l'île de Sejm ont poussé son potentiel, bien que mes plans aient été perturbés. Intéressé par les propriétés de la moisissure ou ma vision expérimentale ?",
+          de: "Der Schimmelvirus war mein Weg zur Unsterblichkeit, indem er organische Materie kontrollierte, um einen Schwarmgeist zu bilden. Meine Experimente auf der Insel Sejm trieben sein Potenzial voran, obwohl meine Pläne gestört wurden. Interessiert an den Eigenschaften des Schimmels oder meiner experimentellen Vision?",
+          it: "Il virus della muffa era il mio percorso verso l'immortalità, controllando la materia organica per formare una mente alveare. I miei esperimenti sull'isola di Sejm hanno spinto il suo potenziale, anche se i miei piani sono stati interrotti. Interessato alle proprietà della muffa o alla mia visione sperimentale?",
+          pt: "O vírus do mofo era meu caminho para a imortalidade, controlando a matéria orgânica para formar uma mente coletiva. Meus experimentos na ilha de Sejm impulsionaram seu potencial, embora meus planos tenham sido interrompidos. Interessado nas propriedades do mofo ou na minha visão experimental?",
+          ru: "Вирус плесени был моим путём к бессмертию, контролирующим органическую материю для формирования коллективного разума. Мои эксперименты на острове Сейм раскрыли его потенциал, хотя мои планы были сорваны. Интересуетесь свойствами плесени или моим экспериментальным видением?",
+          ar: "كان فيروس العفن طريقي نحو الخلود، يتحكم في المادة العضوية لتشكيل عقل جماعي. دفعت تجاربي في جزيرة سيجم بإمكانياته، رغم تعطل خططي. هل أنت مهتم بخصائص العفن أو رؤيتي التجريبية؟"
+        }
+      },
+      "event": {
+        albert: {
+          en: "The 1998 mansion incident was my orchestrated test of Umbrella's B.O.W.s, exposing S.T.A.R.S. to the T-virus. It set the stage for my later Uroboros plans, though survivors like Chris Redfield became a thorn in my side. Want to know more about the incident or its aftermath?",
+          es: "El incidente de la mansión de 1998 fue mi prueba orquestada de los B.O.W.s de Umbrella, exponiendo a S.T.A.R.S. al virus T. Preparó el terreno para mis planes posteriores de Uroboros, aunque sobrevivientes como Chris Redfield se convirtieron en una molestía. ¿Quieres saber más sobre el incidente o sus consecuencias?",
+          fr: "L'incident du manoir de 1998 fut mon test orchestré des B.O.T. d'Umbrella, exposant S.T.A.R.S. au virus T. Il a préparé le terrain pour mes plans Uroboros ultérieurs, bien que des survivants comme Chris Redfield soient devenus un problème. Voulez-vous en savoir plus sur l'incident ou ses conséquences ?",
+          de: "Der Vorfall im Anwesen 1998 war mein inszenierter Test der B.O.W.s von Umbrella, bei dem ich S.T.A.R.S. dem T-Virus aussetzte. Er ebnete den Weg für meine späteren Uroboros-Pläne, obwohl Überlebende wie Chris Redfield zu einem Problem wurden. Möchten Sie mehr über das Ereignis oder seine Folgen erfahren?",
+          it: "L'incidente della villa del 1998 fu il mio test orchestrato dei B.O.T. di Umbrella, esponendo S.T.A.R.S. al virus T. Ha preparato il terreno per i miei piani successivi di Uroboros, anche se sopravvissuti come Chris Redfield sono diventati un problema. Vuoi sapere di più sull'incidente o sulle sue conseguenze?",
+          pt: "O incidente da mansão em 1998 foi meu teste orquestrado dos B.O.W.s da Umbrella, expondo o S.T.A.R.S. ao vírus T. Ele abriu caminho para meus planos Uroboros posteriores, embora sobreviventes como Chris Redfield se tornassem um problema. Quer saber mais sobre o incidente ou suas consequências?",
+          ru: "Инцидент в особняке 1998 года был моим организованным испытанием B.O.W. Umbrella, подвергнув S.T.A.R.S. воздействию вируса T. Он подготовил почву для моих последующих планов с Уроборосом, хотя выжившие, такие как Крис Редфилд, стали проблемой. Хотите узнать больше о событии или его последствиях?",
+          ar: "كانت حادثة القصر في عام 1998 اختبارًا منسقًا لـ B.O.W.s الخاصة بأملريا، حيث عرضت S.T.A.R.S. لفيروس T. مهدت الطريق لخططي اللاحقة مع أوروبوروس، رغم أن الناجين مثل كريس ريدفيلد أصبحوا شوكة في جانبي. هل تريد معرفة المزيد عن الحادثة أو تداعياتها؟"
+        },
+        william: {
+          en: "The 1998 Raccoon City outbreak was triggered by the T-virus leak, worsened by my G-virus mutation after an attack. It led to the city's destruction by a missile strike. Want to explore the outbreak's timeline or my actions during it?",
+          es: "El brote de Raccoon City de 1998 fue desencadenado por la fuga del virus T, empeorado por mi mutación del virus G tras un ataque. Condujo a la destrucción de la ciudad por un ataque con misiles. ¿Quieres explorar la cronología del brote o mis acciones durante él?",
+          fr: "L'épidémie de Raccoon City de 1998 a été déclenchée par la fuite du virus T, aggravée par ma mutation du virus G après une attaque. Elle a conduit à la destruction de la ville par une frappe de missile. Voulez-vous explorer la chronologie de l'épidémie ou mes actions pendant celle-ci ?",
+          de: "Der Ausbruch in Raccoon City 1998 wurde durch ein Leck des T-Virus ausgelöst, verschlimmert durch meine G-Virus-Mutation nach einem Angriff. Er führte zur Zerstörung der Stadt durch einen Raketenangriff. Möchten Sie die Chronologie des Ausbruchs oder meine Handlungen währenddessen erkunden?",
+          it: "L'epidemia di Raccoon City del 1998 fu innescata dalla fuoriuscita del virus T, aggravata dalla mia mutazione del virus G dopo un attacco. Portò alla distruzione della città con un attacco missilistico. Vuoi esplorare la cronologia dell'epidemia o le mie azioni durante essa?",
+          pt: "O surto de Raccoon City em 1998 foi desencadeado por um vazamento do vírus T, agravado pela minha mutação do vírus G após um ataque. Levou à destruição da cidade por um ataque de míssil. Quer explorar a cronologia do surto ou minhas ações durante ele?",
+          ru: "Вспышка в Раккун-Сити в 1998 году была вызвана утечкой вируса T, усугубленной моей мутацией вируса G после нападения. Это привело к уничтожению города ракетным ударом. Хотите изучить хронологию вспышки или мои действия во время неё?",
+          ar: "تفشي راكون سيتي في عام 1998 تسببت فيه تسرب فيروس T، تفاقم بسبب تحوري بفيروس G بعد هجوم. أدى إلى تدمير المدينة بضربة صاروخية. هل تريد استكشاف تسلسل الأحداث أو أفعالي خلالها؟"
+        },
+        alex: {
+          en: "The Sejm Island events in the 2000s were my attempt to perfect the mold virus, creating a controlled outbreak to test my hive-mind theory. Interference from external forces stopped my work. Want to dive into the island's experiments or their outcomes?",
+          es: "Los eventos de la isla de Sejm en los 2000s fueron mi intento de perfeccionar el virus del moho, creando un brote controlado para probar mi teoría de la mente colmena. La interferencia de fuerzas externas detuvo mi trabajo. ¿Quieres profundizar en los experimentos de la isla o sus resultados?",
+          fr: "Les événements de l'île de Sejm dans les années 2000 étaient ma tentative de perfectionner le virus de la moisissure, créant une épidémie contrôlée pour tester ma théorie de la conscience collective. L'interférence de forces externes a arrêté mon travail. Voulez-vous plonger dans les expériences de l'île ou leurs résultats ?",
+          de: "Die Ereignisse auf der Insel Sejm in den 2000ern waren mein Versuch, den Schimmelvirus zu perfektionieren, indem ich einen kontrollierten Ausbruch schuf, um meine Schwarmgeist-Theorie zu testen. Störungen durch externe Kräfte stoppten meine Arbeit. Möchten Sie in die Experimente der Insel oder ihre Ergebnisse eintauchen?",
+          it: "Gli eventi dell'isola di Sejm negli anni 2000 furono il mio tentativo di perfezionare il virus della muffa, creando un'epidemia controllata per testare la mia teoria della mente alveare. L'interferenza di forze esterne ha fermato il mio lavoro. Vuoi approfondire gli esperimenti dell'isola o i loro risultati?",
+          pt: "Os eventos da ilha de Sejm nos anos 2000 foram minha tentativa de aperfeiçoar o vírus do mofo, criando um surto controlado para testar minha teoria de mente coletiva. A interferência de forças externas interrompeu meu trabalho. Quer mergulhar nos experimentos da ilha ou seus resultados?",
+          ru: "События на острове Сейм в 2000-х годах были моей попыткой усовершенствовать вирус плесени, создав контролируемую вспышку для проверки теории коллективного разума. Вмешательство внешних сил остановило мою работу. Хотите погрузиться в эксперименты на острове или их результаты?",
+          ar: "كانت أحداث جزيرة سيجم في العقد الأول من القرن الحادي والعشرين محاولتي لتحسين فيروس العفن، من خلال خلق تفشي متحكم به لاختبار نظريتي في العقل الجماعي. تدخل قوى خارجية أوقف عملي. هل تريد التعمق في تجارب الجزيرة أو نتائجها؟"
+        }
+      },
+      "corporation": {
+        ozwell: {
+          en: "Umbrella Corporation was my vision for humanity's next evolutionary leap, using viral engineering to create a superior species. Founded in the 1960s, it grew into a global powerhouse before its collapse in 2003. Want to discuss its founding principles or downfall?",
+          es: "Umbrella Corporation fue mi visión para el próximo salto evolutivo de la humanidad, usando la ingeniería viral para crear una especie superior. Fundada en los 1960s, creció hasta convertirse en una potencia global antes de su colapso en 2003. ¿Quieres discutir sus principios fundacionales o su caída?",
+          fr: "Umbrella Corporation était ma vision pour le prochain bond évolutif de l'humanité, utilisant l'ingénierie virale pour créer une espèce supérieure. Fondée dans les années 1960, elle est devenue une puissance mondiale avant son effondrement en 2003. Voulez-vous discuter de ses principes fondateurs ou de sa chute ?",
+          de: "Die Umbrella Corporation war meine Vision für den nächsten evolutionären Sprung der Menschheit, indem virale Ingenieurskunst genutzt wurde, um eine überlegene Spezies zu schaffen. Gegründet in den 1960ern, wuchs sie zu einer globalen Supermacht, bevor sie 2003 zusammenbrach. Möchten Sie über ihre Gründungsprinzipien oder ihren Untergang diskutieren?",
+          it: "La Umbrella Corporation era la mia visione per il prossimo balzo evolutivo dell'umanità, utilizzando l'ingegneria virale per creare una specie superiore. Fondata negli anni '60, crebbe fino a diventare una potenza globale prima del suo collasso nel 2003. Vuoi discutere dei suoi principi fondatori o della sua caduta?",
+          pt: "A Umbrella Corporation foi minha visão para o próximo salto evolutivo da humanidade, usando a engenharia viral para criar uma espécie superior. Fundada nos anos 1960, cresceu até se tornar uma potência global antes de seu colapso em 2003. Quer discutir seus princípios fundadores ou sua queda?",
+          ru: "Корпорация Umbrella была моим видением следующего эволюционного скачка человечества, использующим вирусную инженерию для создания превосходящего вида. Основанная в 1960-х годах, она выросла в глобальную сверхдержаву до своего краха в 2003 году. Хотите обсудить её основополагающие принципы или падение?",
+          ar: "كانت شركة أمبريلا رؤيتي للقفزة التطورية التالية للبشرية، باستخدام الهندسة الفيروسية لخلق نوع متفوق. تأسست في الستينيات، ونمت لتصبح قوة عالمية قبل انهيارها في عام 2003. هل تريد مناقشة مبادئ تأسيسها أو سقوطها؟"
+        }
+      },
+      "projects": {
+        albert: {
+          en: "Project W was my most ambitious initiative, aiming to create superior beings through viral enhancement. It produced several notable subjects, including myself. Would you like details on the project's scope or outcomes?",
+          es: "El Proyecto W fue mi iniciativa más ambiciosa, con el objetivo de crear seres superiores a través del mejoramiento viral. Produjo varios sujetos notables, incluido yo mismo. ¿Quieres detalles sobre el alcance o los resultados del proyecto?",
+          fr: "Le projet W était mon initiative la plus ambitieuse, visant à créer des êtres supérieurs grâce à l'amélioration virale. Il a produit plusieurs sujets notables, dont moi-même. Souhaitez-vous des détails sur la portée ou les résultats du projet ?",
+          de: "Projekt W war meine ehrgeizigste Initiative, die darauf abzielte, überlegene Wesen durch virale Verbesserung zu schaffen. Es brachte mehrere bemerkenswerte Subjekte hervor, einschließlich meiner selbst. Möchten Sie Einzelheiten zum Umfang oder zu den Ergebnissen des Projekts?",
+          it: "Il Progetto W è stata la mia iniziativa più ambiziosa, volta a creare esseri superiori attraverso il potenziamento virale. Ha prodotto diversi soggetti degni di nota, incluso me stesso. Vuoi dettagli sulla portata o sui risultati del progetto?",
+          pt: "O Projeto W foi minha iniciativa mais ambiciosa, visando criar seres superiores através de aprimoramento viral. Produziu vários sujeitos notáveis, incluindo eu mesmo. Gostaria de detalhes sobre o escopo ou resultados do projeto?",
+          ru: "Проект W был моей самой амбициозной инициативой, направленной на создание превосходящих существ посредством вирусного улучшения. Он произвёл несколько примечательных субъектов, включая меня самого. Хотите узнать подробности о масштабе проекта или его результатах?",
+          ar: "كان المشروع W أكثر مبادراتي طموحًا، بهدف خلق كائنات متفوقة من خلال التحسين الفيروسي. أنتج عدة مواضيع ملحوظة، بما في ذلك أنا. هل تريد تفاصيل عن نطاق المشروع أو نتائجه؟"
+        },
+        william: {
+          en: "The G-Virus Project was my life's work, pushing beyond the T-virus to achieve perfect regeneration. The results were... unpredictable, as you saw in Raccoon City. Interested in the project's scientific breakthroughs?",
+          es: "El Proyecto Virus G fue el trabajo de mi vida, yendo más allá del virus T para lograr una regeneración perfecta. Los resultados fueron... impredecibles, como viste en Raccoon City. ¿Interesado en los avances científicos del proyecto?",
+          fr: "Le projet Virus G était l'œuvre de ma vie, dépassant le virus T pour atteindre une régénération parfaite. Les résultats étaient... imprévisibles, comme vous l'avez vu à Raccoon City. Intéressé par les percées scientifiques du projet ?",
+          de: "Das G-Virus-Projekt war mein Lebenswerk, das über den T-Virus hinausging, um perfekte Regeneration zu erreichen. Die Ergebnisse waren... unvorhersehbar, wie Sie in Raccoon City gesehen haben. Interessiert an den wissenschaftlichen Durchbrüchen des Projekts?",
+          it: "Il Progetto Virus G è stato il lavoro della mia vita, spingendosi oltre il virus T per ottenere una rigenerazione perfetta. I risultati sono stati... imprevedibili, come hai visto a Raccoon City. Interessato alle scoperte scientifiche del progetto?",
+          pt: "O Projeto Vírus G foi o trabalho da minha vida, indo além do vírus T para alcançar regeneração perfeita. Os resultados foram... imprevisíveis, como você viu em Raccoon City. Interessado nos avanços científicos do projeto?",
+          ru: "Проект «Вирус G» был делом моей жизни, выходящим за пределы вируса T для достижения идеальной регенерации. Результаты были... непредсказуемы, как вы видели в Раккун-Сити. Интересуетесь научными прорывами проекта?",
+          ar: "كان مشروع فيروس G عمل حياتي، متجاوزًا فيروس T لتحقيق تجديد مثالي. كانت النتائج... غير متوقعة، كما رأيت في راكون سيتي. مهتم بالاختراقات العلمية للمشروع؟"
+        },
+        ozwell: {
+          en: "The Wesker Project was my long-term investment in superior human specimens. While not all subjects met expectations, Albert Wesker proved particularly... promising. Care to discuss the project's selection criteria?",
+          es: "El Proyecto Wesker fue mi inversión a largo plazo en especímenes humanos superiores. Aunque no todos los sujetos cumplieron con las expectativas, Albert Wesker resultó particularmente... prometedor. ¿Quieres discutir los criterios de selección del proyecto?",
+          fr: "Le projet Wesker était mon investissement à long terme dans des spécimens humains supérieurs. Bien que tous les sujets n'aient pas répondu aux attentes, Albert Wesker s'est avéré particulièrement... prometteur. Souhaitez-vous discuter des critères de sélection du projet ?",
+          de: "Das Wesker-Projekt war meine langfristige Investition in überlegene menschliche Exemplare. Während nicht alle Probanden den Erwartungen entsprachen, erwies sich Albert Wesker als besonders... vielversprechend. Möchten Sie die Auswahlkriterien des Projekts diskutieren?",
+          it: "Il Progetto Wesker è stato il mio investimento a lungo termine in esemplari umani superiori. Sebbene non tutti i soggetti abbiano soddisfatto le aspettative, Albert Wesker si è rivelato particolarmente... promettente. Vuoi discutere i criteri di selezione del progetto?",
+          pt: "O Projeto Wesker foi meu investimento de longo prazo em espécimes humanos superiores. Embora nem todos os sujeitos tenham atendido às expectativas, Albert Wesker provou ser particularmente... promissor. Gostaria de discutir os critérios de seleção do projeto?",
+          ru: "Проект «Вескер» был моей долгосрочной инвестицией в превосходящие человеческие образцы. Хотя не все субъекты оправдали ожидания, Альберт Вескер оказался особенно... перспективным. Хотите обсудить критерии отбора проекта?",
+          ar: "كان مشروع ويسكر استثماراتي طويلة الأجل في عينات بشرية متفوقة. بينما لم يلب جميع الموضوعات التوقعات، أثبت ألبرت ويسكر أنه... واعد بشكل خاص. هل تهتم بمناقشة معايير اختيار المشروع؟"
+        }
+      },
+      "research": {
+        albert: {
+          en: "My research focused on viral enhancement of human capabilities, particularly through the Uroboros strain. The results could have ushered in a new era of human evolution, if not for interference. Want to explore the science behind it?",
+          es: "Mi investigación se centró en la mejora viral de las capacidades humanas, particularmente a través de la cepa Uroboros. Los resultados podrían haber marcado el comienzo de una nueva era de evolución humana, de no ser por las interferencias. ¿Quieres explorar la ciencia detrás de esto?",
+          fr: "Mes recherches se sont concentrées sur l'amélioration virale des capacités humaines, en particulier grâce à la souche Uroboros. Les résultats auraient pu inaugurer une nouvelle ère de l'évolution humaine, sans interférence. Voulez-vous explorer la science derrière cela ?",
+          de: "Meine Forschung konzentrierte sich auf die virale Verbesserung menschlicher Fähigkeiten, insbesondere durch den Uroboros-Stamm. Die Ergebnisse hätten eine neue Ära der menschlichen Evolution einläuten können, wenn es nicht zu Störungen gekommen wäre. Möchten Sie die Wissenschaft dahinter erkunden?",
+          it: "La mia ricerca si è concentrata sul potenziamento virale delle capacità umane, in particolare attraverso il ceppo Uroboros. I risultati avrebbero potuto inaugurare una nuova era dell'evoluzione umana, se non fosse stato per le interferenze. Vuoi esplorare la scienza che c'è dietro?",
+          pt: "Minha pesquisa focou no aprimoramento viral das capacidades humanas, particularmente através da cepa Uroboros. Os resultados poderiam ter inaugurado uma nova era da evolução humana, não fosse pela interferência. Quer explorar a ciência por trás disso?",
+          ru: "Мои исследования были сосредоточены на вирусном улучшении человеческих возможностей, особенно с помощью штамма Уроборос. Результаты могли бы ознаменовать новую эру человеческой эволюции, если бы не вмешательство. Хотите изучить науку, стоящую за этим?",
+          ar: "ركز بحثي على تعزيز القدرات البشرية الفيروسية، وخاصة من خلال سلالة أوروبوروس. كان من الممكن أن تؤدي النتائج إلى حقبة جديدة من التطور البشري، لولا التدخل. هل تريد استكشاف العلم وراء ذلك؟"
+        },
+        william: {
+          en: "My research bridged virology and genetics, creating viruses that could rewrite human DNA. The G-virus was my masterpiece, though its unpredictable mutations were... problematic. Interested in the genetic engineering techniques?",
+          es: "Mi investigación unió la virología y la genética, creando virus que podrían reescribir el ADN humano. El virus G fue mi obra maestra, aunque sus mutaciones impredecibles fueron... problemáticas. ¿Interesado en las técnicas de ingeniería genética?",
+          fr: "Mes recherches ont fait le lien entre la virologie et la génétique, créant des virus capables de réécrire l'ADN humain. Le virus G était mon chef-d'œuvre, bien que ses mutations imprévisibles aient été... problématiques. Intéressé par les techniques de génie génétique ?",
+          de: "Meine Forschung verband Virologie und Genetik und schuf Viren, die die menschliche DNA umschreiben konnten. Der G-Virus war mein Meisterwerk, obwohl seine unvorhersehbaren Mutationen... problematisch waren. Interessiert an den Gentechnik-Techniken?",
+          it: "La mia ricerca ha unito virologia e genetica, creando virus in grado di riscrivere il DNA umano. Il virus G è stato il mio capolavoro, anche se le sue mutazioni imprevedibili sono state... problematiche. Interessato alle tecniche di ingegneria genetica?",
+          pt: "Minha pesquisa uniu virologia e genética, criando vírus que poderiam reescrever o DNA humano. O vírus G foi minha obra-prima, embora suas mutações imprevisíveis tenham sido... problemáticas. Interessado nas técnicas de engenharia genética?",
+          ru: "Мои исследования объединили вирусологию и генетику, создавая вирусы, способные переписывать человеческую ДНК. Вирус G был моим шедевром, хотя его непредсказуемые мутации были... проблематичны. Интересуетесь методами генной инженерии?",
+          ar: "جسر بحثي بين علم الفيروسات وعلم الوراثة، مما أدى إلى إنشاء فيروسات يمكنها إعادة كتابة الحمض النووي البشري. كان فيروس G تحفتي الفنية، على الرغم من أن تحولاته غير المتوقعة كانت... إشكالية. مهتم بتقنيات الهندسة الوراثية؟"
+        },
+        ozwell: {
+          en: "My research into progenitor viruses laid the foundation for all of Umbrella's bioweapons. The goal was never mere weapons, but the next step in human evolution. Would you like to discuss the philosophical implications?",
+          es: "Mi investigación sobre los virus progenitor sentó las bases para todas las armas biológicas de Umbrella. El objetivo nunca fueron meras armas, sino el siguiente paso en la evolución humana. ¿Te gustaría discutir las implicaciones filosóficas?",
+          fr: "Mes recherches sur les virus progéniteurs ont jeté les bases de toutes les armes biologiques d'Umbrella. Le but n'a jamais été de simples armes, mais la prochaine étape de l'évolution humaine. Souhaitez-vous discuter des implications philosophiques ?",
+          de: "Meine Forschung zu Progenitor-Viren legte den Grundstein für alle Biowaffen von Umbrella. Das Ziel waren niemals bloße Waffen, sondern der nächste Schritt in der menschlichen Evolution. Möchten Sie die philosophischen Implikationen diskutieren?",
+          it: "La mia ricerca sui virus progenitori ha gettato le basi per tutte le armi biologiche di Umbrella. L'obiettivo non sono mai state semplici armi, ma il passo successivo nell'evoluzione umana. Vuoi discutere delle implicazioni filosofiche?",
+          pt: "Minha pesquisa sobre vírus progenitores estabeleceu as bases para todas as armas biológicas da Umbrella. O objetivo nunca foram meras armas, mas o próximo passo na evolução humana. Gostaria de discutir as implicações filosóficas?",
+          ru: "Мои исследования вирусов-предшественников заложили основу для всего биологического оружия Umbrella. Целью никогда не было просто оружие, а следующий шаг в эволюции человека. Хотите обсудить философские последствия?",
+          ar: "أرسى بحثي حول الفيروسات السلف الأساس لجميع الأسلحة البيولوجية لأمريلا. لم يكن الهدف مجرد أسلحة، بل الخطوة التالية في التطور البشري. هل ترغب في مناقشة الآثار الفلسفية؟"
+        }
+      },
+      "locations": {
+        albert: {
+          en: "I operated primarily from Umbrella's Antarctic Base, an ideal location for sensitive research away from prying eyes. The facility's isolation was perfect for my Uroboros experiments. Want details about the base's security or layout?",
+          es: "Operé principalmente desde la Base Antártica de Umbrella, una ubicación ideal para investigaciones sensibles lejos de miradas indiscretas. El aislamiento de la instalación era perfecto para mis experimentos con Uroboros. ¿Quieres detalles sobre la seguridad o el diseño de la base?",
+          fr: "J'ai opéré principalement depuis la base antarctique d'Umbrella, un emplacement idéal pour une recherche sensible à l'abri des regards indiscrets. L'isolement de l'installation était parfait pour mes expériences Uroboros. Voulez-vous des détails sur la sécurité ou la disposition de la base ?",
+          de: "Ich habe hauptsächlich von Umbrellas Antarktis-Basis aus operiert, einem idealen Ort für sensible Forschungen, fernab neugieriger Blicke. Die Isolation der Einrichtung war perfekt für meine Uroboros-Experimente. Möchten Sie Einzelheiten zur Sicherheit oder zum Layout der Basis?",
+          it: "Ho operato principalmente dalla Base Antartica di Umbrella, una posizione ideale per ricerche sensibili lontano da occhi indiscreti. L'isolamento della struttura era perfetto per i miei esperimenti su Uroboros. Vuoi dettagli sulla sicurezza o sulla disposizione della base?",
+          pt: "Operei principalmente na Base Antártica da Umbrella, um local ideal para pesquisas sensíveis longe de olhares indiscretos. O isolamento da instalação era perfeito para meus experimentos com Uroboros. Quer detalhes sobre a segurança ou layout da base?",
+          ru: "Я работал в основном с антарктической базы Umbrella, идеального места для конфиденциальных исследований вдали от посторонних глаз. Изоляция объекта была идеальной для моих экспериментов с Уроборосом. Хотите узнать подробности о безопасности или планировке базы?",
+          ar: "لقد عملت بشكل أساسي من القاعدة القطبية الجنوبية لأمريلا، وهي موقع مثالي للبحث الحساس بعيدًا عن الأعين المتطفلة. كان عزل المرفق مثاليًا لتجاربي مع أوروبوروس. هل تريد تفاصيل حول أمان القاعدة أو تخطيطها؟"
+        },
+        william: {
+          en: "The NEST facility beneath Raccoon City was my primary research lab, where I developed the G-virus. Its underground location provided security, though ironically became ground zero for the outbreak. Want to discuss the lab's design?",
+          es: "Las instalaciones NEST debajo de Raccoon City fueron mi laboratorio de investigación principal, donde desarrollé el virus G. Su ubicación subterránea proporcionaba seguridad, aunque irónicamente se convirtió en el punto cero del brote. ¿Quieres discutir el diseño del laboratorio?",
+          fr: "L'installation NEST sous Raccoon City était mon laboratoire de recherche principal, où j'ai développé le virus G. Son emplacement souterrain offrait une sécurité, bien qu'il soit ironiquement devenu le point zéro de l'épidémie. Voulez-vous discuter de la conception du laboratoire ?",
+          de: "Die NEST-Anlage unter Raccoon City war mein Hauptforschungslabor, in dem ich den G-Virus entwickelte. Ihr unterirdischer Standort bot Sicherheit, wurde aber ironischerweise zum Epizentrum des Ausbruchs. Möchten Sie über das Design des Labors diskutieren?",
+          it: "La struttura NEST sotto Raccoon City era il mio laboratorio di ricerca principale, dove ho sviluppato il virus G. La sua posizione sotterranea forniva sicurezza, anche se ironicamente divenne l'epicentro dell'epidemia. Vuoi discutere del design del laboratorio?",
+          pt: "A instalação NEST abaixo de Raccoon City era meu laboratório de pesquisa principal, onde desenvolvi o vírus G. Sua localização subterrânea proporcionava segurança, embora ironicamente tenha se tornado o ponto zero do surto. Quer discutir o design do laboratório?",
+          ru: "Объект NEST под Раккун-Сити был моей основной исследовательской лабораторией, где я разработал вирус G. Его подземное расположение обеспечивало безопасность, хотя иронично стало эпицентром вспышки. Хотите обсудить дизайн лаборатории?",
+          ar: "كان مرفق NEST تحت راكون سيتي مختبر البحث الرئيسي لي، حيث قمت بتطوير فيروس G. وفر موقعه تحت الأرض الأمان، على الرغم من أنه أصبح بشكل مثير للسخرية نقطة الصفر للتفشي. هل تريد مناقشة تصميم المختبر؟"
+        },
+        ozwell: {
+          en: "The Spencer Mansion was more than a residence - it was a carefully designed testing ground for Umbrella's early B.O.W.s. The architecture itself was part of the experiment. Interested in the mansion's hidden functions?",
+          es: "La Mansión Spencer era más que una residencia: era un campo de pruebas cuidadosamente diseñado para los primeros B.O.W.s de Umbrella. La arquitectura en sí era parte del experimento. ¿Interesado en las funciones ocultas de la mansión?",
+          fr: "Le manoir Spencer était plus qu'une résidence - c'était un terrain d'essai soigneusement conçu pour les premiers B.O.T. d'Umbrella. L'architecture elle-même faisait partie de l'expérience. Intéressé par les fonctions cachées du manoir ?",
+          de: "Das Spencer-Anwesen war mehr als eine Residenz - es war ein sorgfältig gestalteter Testbereich für Umbrellas frühe B.O.W.s. Die Architektur selbst war Teil des Experiments. Interessiert an den versteckten Funktionen des Anwesens?",
+          it: "La villa Spencer era più di una residenza: era un campo di prova progettato con cura per i primi B.O.T. di Umbrella. L'architettura stessa faceva parte dell'esperimento. Interessato alle funzioni nascoste della villa?",
+          pt: "A Mansão Spencer era mais que uma residência - era um campo de testes cuidadosamente projetado para os primeiros B.O.W.s da Umbrella. A própria arquitetura era parte do experimento. Interessado nas funções ocultas da mansão?",
+          ru: "Особняк Спенсера был больше, чем резиденция — это был тщательно спроектированный испытательный полигон для первых B.O.W. Umbrella. Сама архитектура была частью эксперимента. Интересуетесь скрытыми функциями особняка?",
+          ar: "كان قصر سبنسر أكثر من مجرد سكن - لقد كان موقع اختبار مصمم بعناية لأوائل B.O.W.s التابعة لأملريا. كان العمارة نفسها جزءًا من التجربة. مهتم بالوظائف المخفية للقصر؟"
+        }
+      },
+      "personnel": {
+        albert: {
+          en: "I carefully selected personnel for my projects, prioritizing competence over morality. Many S.T.A.R.S. members were unwitting test subjects before becoming obstacles. Want details on specific individuals?",
+          es: "Seleccioné cuidadosamente al personal para mis proyectos, priorizando la competencia sobre la moralidad. Muchos miembros de S.T.A.R.S. fueron sujetos de prueba sin saberlo antes de convertirse en obstáculos. ¿Quieres detalles sobre individuos específicos?",
+          fr: "J'ai soigneusement sélectionné le personnel pour mes projets, en privilégiant la compétence à la moralité. De nombreux membres de S.T.A.R.S. ont été des sujets de test à leur insu avant de devenir des obstacles. Voulez-vous des détails sur des individus spécifiques ?",
+          de: "Ich habe das Personal für meine Projekte sorgfältig ausgewählt und Kompetenz über Moral gestellt. Viele S.T.A.R.S.-Mitglieder waren unwissentliche Testpersonen, bevor sie zu Hindernissen wurden. Möchten Sie Details zu bestimmten Personen?",
+          it: "Ho selezionato con cura il personale per i miei progetti, privilegiando la competenza rispetto alla moralità. Molti membri degli S.T.A.R.S. sono stati inconsapevolmente soggetti di test prima di diventare ostacoli. Vuoi dettagli su individui specifici?",
+          pt: "Selecionei cuidadosamente pessoal para meus projetos, priorizando competência sobre moralidade. Muitos membros do S.T.A.R.S. foram sujeitos de teste sem saber antes de se tornarem obstáculos. Quer detalhes sobre indivíduos específicos?",
+          ru: "Я тщательно подбирал персонал для своих проектов, ставя компетентность выше морали. Многие члены S.T.A.R.S. были невольными испытуемыми, прежде чем стать препятствиями. Хотите узнать подробности о конкретных лицах?",
+          ar: "لقد اخترت بعناية الموظفين لمشاريعي، مع إعطاء الأولوية للكفاءة على الأخلاق. كان العديد من أعضاء S.T.A.R.S. موضوعات اختبار غير مدركة قبل أن تصبح عقبات. هل تريد تفاصيل عن أفراد معينين؟"
+        },
+        william: {
+          en: "My research team included some of Umbrella's brightest minds, though few understood the full implications of our work. Annette was the exception, but even she couldn't foresee the consequences. Want to discuss my colleagues?",
+          es: "Mi equipo de investigación incluyó algunas de las mentes más brillantes de Umbrella, aunque pocos entendieron las implicaciones completas de nuestro trabajo. Annette fue la excepción, pero incluso ella no pudo prever las consecuencias. ¿Quieres discutir sobre mis colegas?",
+          fr: "Mon équipe de recherche comprenait certains des esprits les plus brillants d'Umbrella, bien que peu aient compris toutes les implications de notre travail. Annette était l'exception, mais même elle n'a pas pu prévoir les conséquences. Voulez-vous discuter de mes collègues ?",
+          de: "Mein Forschungsteam umfasste einige der klügsten Köpfe von Umbrella, obwohl nur wenige die vollen Auswirkungen unserer Arbeit verstanden. Annette war die Ausnahme, aber selbst sie konnte die Konsequenzen nicht vorhersehen. Möchten Sie über meine Kollegen diskutieren?",
+          it: "Il mio team di ricerca includeva alcune delle menti più brillanti di Umbrella, anche se pochi hanno compreso appieno le implicazioni del nostro lavoro. Annette era l'eccezione, ma anche lei non poteva prevedere le conseguenze. Vuoi parlare dei miei colleghi?",
+          pt: "Minha equipe de pesquisa incluiu algumas das mentes mais brilhantes da Umbrella, embora poucos entendessem as implicações completas do nosso trabalho. Annette foi a exceção, mas mesmo ela não conseguiu prever as consequências. Quer discutir meus colegas?",
+          ru: "В мою исследовательскую группу входили одни из самых ярких умов Umbrella, хотя немногие понимали все последствия нашей работы. Аннет была исключением, но даже она не могла предвидеть последствий. Хотите обсудить моих коллег?",
+          ar: "ضمت فرقتي البحثية بعضًا من ألمع العقول في أمبريلا، على الرغم من أن قلة فهمت الآثار الكاملة لعملنا. كانت أنيت الاستثناء، لكن حتى هي لم تستطع توقع العواقب. هل تريد مناقشة زملائي؟"
+        },
+        ozwell: {
+          en: "I handpicked Umbrella's early leadership, including Spencer, Marcus, and Ashford. Each brought unique talents, though personal ambitions eventually fractured our vision. Want insights into these key figures?",
+          es: "Seleccioné personalmente el liderazgo inicial de Umbrella, incluidos Spencer, Marcus y Ashford. Cada uno aportó talentos únicos, aunque las ambiciones personales finalmente fracturaron nuestra visión. ¿Quieres información sobre estas figuras clave?",
+          fr: "J'ai soigneusement sélectionné les premiers dirigeants d'Umbrella, dont Spencer, Marcus et Ashford. Chacun a apporté des talents uniques, bien que les ambitions personnelles aient finalement fracturé notre vision. Vous voulez des informations sur ces figures clés ?",
+          de: "Ich habe die frühe Führung von Umbrella persönlich ausgewählt, darunter Spencer, Marcus und Ashford. Jeder brachte einzigartige Talente mit, obwohl persönliche Ambitionen schließlich unsere Vision zerstörten. Möchten Sie Einblicke in diese Schlüsselfiguren?",
+          it: "Ho selezionato personalmente i primi leader di Umbrella, tra cui Spencer, Marcus e Ashford. Ognuno ha portato talenti unici, anche se le ambizioni personali alla fine hanno incrinato la nostra visione. Vuoi approfondimenti su queste figure chiave?",
+          pt: "Selecionei pessoalmente a liderança inicial da Umbrella, incluindo Spencer, Marcus e Ashford. Cada um trouxe talentos únicos, embora ambições pessoais acabaram por fraturar nossa visão. Quer insights sobre essas figuras-chave?",
+          ru: "Я лично отбирал первых руководителей Umbrella, включая Спенсера, Маркуса и Эшфорда. Каждый привнёс уникальные таланты, хотя личные амбиции в конечном итоге разрушили наше видение. Хотите узнать об этих ключевых фигурах?",
+          ar: "لقد اخترت شخصيًا القيادة المبكرة لأمريلا، بما في ذلك سبنسر وماركوس وآشفورد. كل منهم أتى بمواهب فريدة، على الرغم من أن الطموحات الشخصية شقت في النهاية رؤيتنا. هل تريد رؤى حول هذه الشخصيات الرئيسية؟"
+        }
+      },
+      "experiments": {
+        albert: {
+          en: "My experiments focused on viral enhancement of human subjects, with varying degrees of success. The Wesker Children were among the few viable results. Want details on the methodology or specific test cases?",
+          es: "Mis experimentos se centraron en la mejora viral de sujetos humanos, con diversos grados de éxito. Los Niños Wesker estuvieron entre los pocos resultados viables. ¿Quieres detalles sobre la metodología o casos de prueba específicos?",
+          fr: "Mes expériences se sont concentrées sur l'amélioration virale de sujets humains, avec des degrés de succès variables. Les Enfants Wesker figuraient parmi les rares résultats viables. Voulez-vous des détails sur la méthodologie ou des cas de test spécifiques ?",
+          de: "Meine Experimente konzentrierten sich auf die virale Verbesserung menschlicher Probanden mit unterschiedlichem Erfolg. Die Wesker-Kinder gehörten zu den wenigen brauchbaren Ergebnissen. Möchten Sie Einzelheiten zur Methodik oder zu bestimmten Testfällen?",
+          it: "I miei esperimenti si sono concentrati sul potenziamento virale di soggetti umani, con vari gradi di successo. I Bambini Wesker erano tra i pochi risultati validi. Vuoi dettagli sulla metodologia o su casi di test specifici?",
+          pt: "Meus experimentos focaram no aprimoramento viral de sujeitos humanos, com vários graus de sucesso. As Crianças Wesker estavam entre os poucos resultados viáveis. Quer detalhes sobre a metodologia ou casos de teste específicos?",
+          ru: "Мои эксперименты были сосредоточены на вирусном улучшении человеческих субъектов с разной степенью успеха. Дети Вескеры были среди немногих жизнеспособных результатов. Хотите узнать подробности о методологии или конкретных тестовых случаях?",
+          ar: "ركزت تجاربي على التحسين الفيروسي للبشر، بدرجات متفاوتة من النجاح. كان أطفال ويسكر من بين النتائج القليلة القابلة للتطبيق. هل تريد تفاصيل عن المنهجية أو حالات اختبار محددة؟"
+        },
+        william: {
+          en: "My experiments with the G-virus produced remarkable but unstable results. The transformation process was irreversible, leading to increasingly monstrous forms. Want to discuss the biological mechanisms at work?",
+          es: "Mis experimentos con el virus G produjeron resultados notables pero inestables. El proceso de transformación fue irreversible, lo que llevó a formas cada vez más monstruosas. ¿Quieres discutir los mecanismos biológicos en juego?",
+          fr: "Mes expériences avec le virus G ont produit des résultats remarquables mais instables. Le processus de transformation était irréversible, conduisant à des formes de plus en plus monstrueuses. Voulez-vous discuter des mécanismes biologiques à l'œuvre ?",
+          de: "Meine Experimente mit dem G-Virus erbrachten bemerkenswerte, aber instabile Ergebnisse. Der Transformationsprozess war irreversibel und führte zu zunehmend monströsen Formen. Möchten Sie die biologischen Mechanismen diskutieren?",
+          it: "I miei esperimenti con il virus G hanno prodotto risultati notevoli ma instabili. Il processo di trasformazione era irreversibile, portando a forme sempre più mostruose. Vuoi discutere i meccanismi biologici in atto?",
+          pt: "Meus experimentos com o vírus G produziram resultados notáveis, mas instáveis. O processo de transformação foi irreversível, levando a formas cada vez mais monstruosas. Quer discutir os mecanismos biológicos em ação?",
+          ru: "Мои эксперименты с вирусом G дали замечательные, но нестабильные результаты. Процесс трансформации был необратимым, приводя ко всё более чудовищным формам. Хотите обсудить биологические механизмы в работе?",
+          ar: "أدت تجاربي مع فيروس G إلى نتائج ملحوظة لكنها غير مستقرة. كانت عملية التحول لا رجعة فيها، مما أدى إلى أشكال وحشية متزايدة. هل تريد مناقشة الآليات البيولوجية العاملة؟"
+        },
+        alex: {
+          en: "My experiments with the mold virus explored consciousness transfer and hive-mind connections. The results were promising until interference disrupted everything. Want details on the neurological aspects?",
+          es: "Mis experimentos con el virus del moho exploraron la transferencia de conciencia y las conexiones de mente colmena. Los resultados fueron prometedores hasta que la interferencia lo interrumpió todo. ¿Quieres detalles sobre los aspectos neurológicos?",
+          fr: "Mes expériences avec le virus de la moisissure ont exploré le transfert de conscience et les connexions de conscience collective. Les résultats étaient prometteurs jusqu'à ce que des interférences ne perturbent tout. Voulez-vous des détails sur les aspects neurologiques ?",
+          de: "Meine Experimente mit dem Schimmelvirus erforschten Bewusstseinsübertragung und Schwarmgeist-Verbindungen. Die Ergebnisse waren vielversprechend, bis Störungen alles unterbrachen. Möchten Sie Einzelheiten zu den neurologischen Aspekten?",
+          it: "I miei esperimenti con il virus della muffa hanno esplorato il trasferimento di coscienza e le connessioni della mente alveare. I risultati erano promettenti fino a quando le interferenze non hanno interrotto tutto. Vuoi dettagli sugli aspetti neurologici?",
+          pt: "Meus experimentos com o vírus do mofo exploraram transferência de consciência e conexões de mente coletiva. Os resultados foram promissores até que interferências interromperam tudo. Quer detalhes sobre os aspectos neurológicos?",
+          ru: "Мои эксперименты с вирусом плесени исследовали перенос сознания и связи коллективного разума. Результаты были многообещающими, пока вмешательство не разрушило всё. Хотите узнать подробности о неврологических аспектах?",
+          ar: "استكشفت تجاربي مع فيروس العفن نقل الوعي واتصالات العقل الجماعي. كانت النتائج واعدة حتى عطل التدخل كل شيء. هل تريد تفاصيل عن الجوانب العصبية؟"
+        }
+      },
+      "weapons": {
+        albert: {
+          en: "I viewed B.O.W.s not just as weapons, but as the next stage of human evolution. The Uroboros project was meant to be selective, creating superior beings. Want to discuss the ethical implications?",
+          es: "Vi a los B.O.W.s no solo como armas, sino como la próxima etapa de la evolución humana. El proyecto Uroboros estaba destinado a ser selectivo, creando seres superiores. ¿Quieres discutir las implicaciones éticas?",
+          fr: "Je considérais les B.O.T. non seulement comme des armes, mais comme la prochaine étape de l'évolution humaine. Le projet Uroboros devait être sélectif, créant des êtres supérieurs. Voulez-vous discuter des implications éthiques ?",
+          de: "Ich betrachtete B.O.W.s nicht nur als Waffen, sondern als die nächste Stufe der menschlichen Evolution. Das Uroboros-Projekt sollte selektiv sein und überlegene Wesen schaffen. Möchten Sie die ethischen Implikationen diskutieren?",
+          it: "Consideravo i B.O.T. non solo come armi, ma come il prossimo stadio dell'evoluzione umana. Il progetto Uroboros doveva essere selettivo, creando esseri superiori. Vuoi discutere delle implicazioni etiche?",
+          pt: "Via os B.O.W.s não apenas como armas, mas como o próximo estágio da evolução humana. O projeto Uroboros deveria ser seletivo, criando seres superiores. Quer discutir as implicações éticas?",
+          ru: "Я рассматривал B.O.W. не просто как оружие, а как следующую ступень человеческой эволюции. Проект «Уроборос» должен был быть избирательным, создавая превосходящих существ. Хотите обсудить этические последствия?",
+          ar: "لقد نظرت إلى B.O.W.s ليس فقط كأسلحة، ولكن كالمرحلة التالية من التطور البشري. كان مشروع أوروبوروس يهدف إلى أن يكون انتقائيًا، مما يخلق كائنات متفوقة. هل تريد مناقشة الآثار الأخلاقية؟"
+        },
+        william: {
+          en: "The G-virus created some of Umbrella's most powerful B.O.W.s, though their instability made them difficult to control. The G-Birkin specimens demonstrated terrifying potential. Want to analyze their combat capabilities?",
+          es: "El virus G creó algunos de los B.O.W.s más poderosos de Umbrella, aunque su inestabilidad los hacía difíciles de controlar. Los especímenes G-Birkin demostraron un potencial aterrador. ¿Quieres analizar sus capacidades de combate?",
+          fr: "Le virus G a créé certains des B.O.T. les plus puissants d'Umbrella, bien que leur instabilité les rendait difficiles à contrôler. Les spécimens G-Birkin ont démontré un potentiel terrifiant. Voulez-vous analyser leurs capacités de combat ?",
+          de: "Der G-Virus schuf einige der mächtigsten B.O.W.s von Umbrella, obwohl ihre Instabilität sie schwer kontrollierbar machte. Die G-Birkin-Exemplare zeigten erschreckendes Potenzial. Möchten Sie ihre Kampffähigkeiten analysieren?",
+          it: "Il virus G ha creato alcuni dei B.O.T. più potenti di Umbrella, sebbene la loro instabilità li rendesse difficili da controllare. Gli esemplari G-Birkin hanno dimostrato un potenziale terrificante. Vuoi analizzare le loro capacità di combattimento?",
+          pt: "O vírus G criou alguns dos B.O.W.s mais poderosos da Umbrella, embora sua instabilidade os tornasse difíceis de controlar. Os espécimes G-Birkin demonstraram potencial aterrorizante. Quer analisar suas capacidades de combate?",
+          ru: "Вирус G создал одни из самых мощных B.O.W. Umbrella, хотя их нестабильность затрудняла контроль. Образцы G-Биркина продемонстрировали устрашающий потенциал. Хотите проанализировать их боевые возможности?",
+          ar: "خلق فيروس G بعضًا من أقوى B.O.W.s التابعة لأملريلا، على الرغم من أن عدم استقرارها جعلها صعبة التحكم. أظهرت عينات G-Birkin إمكانات مرعبة. هل تريد تحليل قدراتهم القتالية؟"
+        }
+      }
+    };
+
+    // Synonym mapping for natural language processing
+    const synonyms = {
+      role: ["role", "position", "job", "duty", "function", "purpose", "part", "responsibility"],
+      virus: ["virus", "viruses", "viral", "infection", "pathogen", "bio-weapon", "disease", "strain"],
+      event: ["event", "incident", "outbreak", "crisis", "happening", "occurrence", "situation", "case"],
+      corporation: ["corporation", "company", "umbrella", "organization", "firm", "business", "enterprise"],
+      projects: ["project", "initiative", "program", "venture", "scheme", "operation"],
+      research: ["research", "study", "investigation", "experimentation", "analysis", "inquiry"],
+      locations: ["location", "facility", "site", "base", "lab", "laboratory", "place"],
+      personnel: ["personnel", "staff", "team", "crew", "employees", "workers", "members"],
+      experiments: ["experiment", "test", "trial", "study", "research", "procedure"],
+      weapons: ["weapon", "bio-weapon", "B.O.W.", "biological", "armament", "device"]
+    };
+
+    // AI Chat System Elements
+    const characterSelect = document.getElementById('characterSelect');
+    const chatContainer = document.getElementById('chatContainer');
+    const charPhoto = document.getElementById('charPhoto');
+    const charName = document.getElementById('charName');
+    const chatLog = document.getElementById('chatLog');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const conversationSuggestion = document.getElementById('conversationSuggestion');
+    const topicList = document.getElementById('topicList');
+    
+    let currentCharKey = null;
+
+    function updateCharacterDisplay() {
+      if (!currentCharKey || !characters[currentCharKey]) return;
+      
+      charPhoto.innerHTML = `<img src="${characters[currentCharKey].photo}" 
+                                alt="${characters[currentCharKey].name[currentLang] || characters[currentCharKey].name.en}" />`;
+      
+      charName.textContent = characters[currentCharKey].name[currentLang] || characters[currentCharKey].name.en;
+      
+      if (characters[currentCharKey].suggestions) {
+        conversationSuggestion.textContent = `Suggestion: ${characters[currentCharKey].suggestions[currentLang] || characters[currentCharKey].suggestions.en}`;
+      }
+    }
+
+    // Parse user input for topic detection
+    function parseInput(input, availableTopics) {
+      if (!input || !availableTopics) return null;
+      
+      const words = input.toLowerCase().split(/\s+/);
+      
+      for (const topic of availableTopics) {
+        if (synonyms[topic] && synonyms[topic].some(synonym => 
+            words.includes(synonym.toLowerCase()))) {
+          return topic;
+        }
+      }
+      return null;
+    }
+
+    function appendMessage(message, sender) {
+      if (!message || !sender) return;
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.className = 'message-sender';
+      senderDiv.textContent = sender === 'user' 
+        ? (translations[currentLang]?.user || 'User') 
+        : (characters[currentCharKey]?.name[currentLang] || characters[currentCharKey]?.name.en || 'AI');
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = message;
+      
+      messageDiv.appendChild(senderDiv);
+      messageDiv.appendChild(contentDiv);
+      chatLog.appendChild(messageDiv);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'typing-indicator';
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'typing-dot';
+        typingDiv.appendChild(dot);
+      }
+      
+      chatLog.appendChild(typingDiv);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      return typingDiv;
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator(indicator) {
+      if (indicator && indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+      }
+    }
+       
+    // Update topic list
+    function updateTopicList() {
+      if (!currentCharKey || !characters[currentCharKey]) {
+        topicList.innerHTML = '';
+        return;
+      }
+      
+      const topics = characters[currentCharKey].topics || [];
+      topicList.innerHTML = `
+        <h3>${translations[currentLang]?.available_topics || 'Available Topics'}</h3>
+        <ul>
+          ${topics.map(topic => 
+            `<li>${translations[currentLang]?.[topic] || topic}</li>`
+          ).join('')}
+        </ul>
+        <p class="note">${translations[currentLang]?.note || 'Note: This system contains classified information.'}</p>
+      `;
+      
+      // Add click event to topic items
+      topicList.querySelectorAll('li').forEach((item, index) => {
+        item.addEventListener('click', () => {
+          const topic = topics[index];
+          userInput.value = translations[currentLang]?.[topic] || topic;
+          sendMessage();
+        });
+      });
+    }
+
+    function sendMessage() {
+      const input = userInput.value.trim();
+      if (!input || !currentCharKey || !characters[currentCharKey]) return;
+      
+      appendMessage(input, 'user');
+      const availableTopics = characters[currentCharKey].topics || [];
+      const topic = parseInput(input, availableTopics);
+      
+      const typingIndicator = showTypingIndicator();
+      
+      setTimeout(() => {
+        hideTypingIndicator(typingIndicator);
+        
+        let response;
+        if (topic && residentEvilKnowledge[topic] && residentEvilKnowledge[topic][currentCharKey]) {
+          response = residentEvilKnowledge[topic][currentCharKey][currentLang] || 
+                    residentEvilKnowledge[topic][currentCharKey].en ||
+                    `I have information about ${topic} but not in your language.`;
+        } else {
+          const topicList = availableTopics.map(t => translations[currentLang]?.[t] || t).join(', ');
+          response = `${translations[currentLang]?.no_knowledge || 'I have little to say on that matter. Please ask about:'} ${topicList}.`;
+        }
+        
+        appendMessage(response, 'ai');
+      }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+      
+      userInput.value = '';
+    }
+
+    // Character selection
+    characterSelect.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' && e.target.dataset.char) {
+        // Remove selected class from all buttons
+        document.querySelectorAll('#characterSelect button').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+      
+        // Add selected class to clicked button
+        e.target.classList.add('selected');
+        
+        currentCharKey = e.target.dataset.char;
+        chatContainer.style.display = 'flex';
+        updateCharacterDisplay();
+        chatLog.innerHTML = '';
+        updateTopicList();
+        userInput.focus();
+      }
+    });
+
+    // Send button and Enter key
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Security System
+    const quizContainer = document.getElementById('quizContainer');
+    const quizQuestion = document.getElementById('quizQuestion');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const timerDisplay = document.getElementById('timer');
+    const passwordDisplay = document.getElementById('passwordDisplay');
+    const copyBtn = document.getElementById('copyBtn');
+    const terminalContainer = document.getElementById('terminalContainer');
+    const output = document.getElementById('output');
+    const passwordInput = document.getElementById('passwordInput');
+    const accessDenied = document.getElementById('accessDenied');
+    const overrideBtn = document.getElementById('overrideBtn');
+    const aiSystem = document.getElementById('aiSystem');
+    const securitySystem = document.getElementById('securitySystem');
+
+    const securityQuestions = [
+      {
+        question: {
+          en: "What virus was developed by Dr. William Birkin?",
+          es: "¿Qué virus desarrolló el Dr. William Birkin?",
+          fr: "Quel virus a été développé par le Dr William Birkin ?",
+          de: "Welchen Virus entwickelte Dr. Wilhelm Birkin?",
+          it: "Quale virus è stato sviluppato dal Dr. William Birkin?",
+          pt: "Qual vírus foi desenvolvido pelo Dr. William Birkin?",
+          ru: "Какой вирус разработал доктор Уильям Биркин?",
+          ar: "ما الفيروس الذي طوره د. ويليام بيركين؟"
+        },
+        options: [
+          { text: "T-Virus", isCorrect: false },
+          { text: "G-Virus", isCorrect: true },
+          { text: "Uroboros Virus", isCorrect: false },
+          { text: "Mold Virus", isCorrect: false }
+        ]
+      },
+      {
+        question: {
+          en: "Which incident was orchestrated by Albert Wesker in 1998?",
+          es: "¿Qué incidente fue orquestado por Albert Wesker en 1998?",
+          fr: "Quel incident a été orchestré par Albert Wesker en 1998 ?",
+          de: "Welchen Vorfall inszenierte Albert Wesker 1998?",
+          it: "Quale incidente è stato orchestrato da Albert Wesker nel 1998?",
+          pt: "Qual incidente foi orquestrado por Albert Wesker em 1998?",
+          ru: "Какой инцидент организовал Альберт Вескер в 1998 году?",
+          ar: "أي حادثة نسقها ألبرت ويسكر في عام 1998؟"
+        },
+        options: [
+          { text: "Raccoon City Outbreak", isCorrect: false },
+          { text: "Mansion Incident", isCorrect: true },
+          { text: "Sejm Island Experiments", isCorrect: false },
+          { text: "Antarctic Base Incident", isCorrect: false }
+        ]
+      },
+      {
+        question: {
+          en: "Who co-founded Umbrella Corporation?",
+          es: "¿Quién cofundó Umbrella Corporation?",
+          fr: "Qui a cofondé Umbrella Corporation ?",
+          de: "Wer hat die Umbrella Corporation mitgegründet?",
+          it: "Chi ha co-fondato la Umbrella Corporation?",
+          pt: "Quem co-fundou a Umbrella Corporation?",
+          ru: "Кто соосновал корпорацию Umbrella?",
+          ar: "من شارك في تأسيس شركة أمبريلا؟"
+        },
+        options: [
+          { text: "Dr. Albert Wesker", isCorrect: false },
+          { text: "Dr. William Birkin", isCorrect: false },
+          { text: "Dr. Ozwell E. Spencer", isCorrect: true },
+          { text: "Alex Wesker", isCorrect: false }
+        ]
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let timeLeft = 7;
+    let timer;
+    let correctPassword = '';
+    let isOverrideUsed = false;
+
+    function generateRandomPassword() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const numbers = '0123456789';
+      let password = '';
+      
+      // Add 1-2 random letters
+      const letterCount = Math.floor(Math.random() * 2) + 1;
+      for (let i = 0; i < letterCount; i++) {
+        password += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      
+      // Add 3-4 random numbers
+      const numberCount = Math.floor(Math.random() * 2) + 3;
+      for (let i = 0; i < numberCount; i++) {
+        password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+      }
+      
+      return password;
+    }
+
+    function startQuiz() {
+      const question = securityQuestions[currentQuestionIndex];
+      quizQuestion.textContent = question.question[currentLang];
+      optionsContainer.innerHTML = '';
+      question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option.text;
+        btn.setAttribute('aria-label', `${translations[currentLang].answer_option} ${index + 1}: ${option.text}`);
+        btn.addEventListener('click', () => checkAnswer(option.isCorrect));
+        optionsContainer.appendChild(btn);
+      });
+      timeLeft = 7;
+      timerDisplay.textContent = `${translations[currentLang].timer}: ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `${translations[currentLang].timer}: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          quizQuestion.textContent = translations[currentLang].time_up;
+          optionsContainer.innerHTML = '';
+          timerDisplay.textContent = '';
+          setTimeout(() => {
+            currentQuestionIndex = (currentQuestionIndex + 1) % securityQuestions.length;
+            startQuiz();
+          }, 2000);
+        }
+      }, 1000);
+    }
+
+    function checkAnswer(isCorrect) {
+      clearInterval(timer);
+      if (isCorrect) {
+        quizQuestion.textContent = translations[currentLang].correct;
+        correctPassword = generateRandomPassword();
+        passwordDisplay.textContent = `${translations[currentLang].password_is}: ${correctPassword}`;
+        copyBtn.style.display = 'block';
+        optionsContainer.innerHTML = '';
+        timerDisplay.textContent = '';
+        terminalContainer.style.display = 'block';
+      } else {
+        quizQuestion.textContent = translations[currentLang].wrong_answer;
+        optionsContainer.innerHTML = '';
+        timerDisplay.textContent = '';
+        setTimeout(() => {
+          currentQuestionIndex = (currentQuestionIndex + 1) % securityQuestions.length;
+          startQuiz();
+        }, 2000);
+      }
+    }
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(correctPassword).then(() => {
+        copyBtn.textContent = translations[currentLang].copied;
+        setTimeout(() => {
+          copyBtn.textContent = translations[currentLang].copy_password;
+        }, 2000);
+      });
+    });
+
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const enteredPassword = passwordInput.value.trim();
+        if (enteredPassword === correctPassword) {
+          output.textContent = `${translations[currentLang].password_accepted}\n${translations[currentLang].access_granted}`;
+          accessDenied.textContent = '';
+          passwordInput.style.display = 'none';
+          securitySystem.style.display = 'none';
+          aiSystem.style.display = 'block';
+          conversationSuggestion.textContent = isOverrideUsed ? 
+            translations[currentLang].override_warning : 
+            translations[currentLang].select_character_suggestion;
+          overrideBtn.style.display = 'none';
+        } else {
+          accessDenied.textContent = translations[currentLang].access_denied;
+          passwordInput.value = '';
+          overrideBtn.style.display = 'block';
+        }
+      }
+    });
+
+    overrideBtn.addEventListener('click', () => {
+      isOverrideUsed = true;
+      output.textContent = translations[currentLang].override_granted;
+      accessDenied.textContent = '';
+      passwordInput.style.display = 'none';
+      overrideBtn.style.display = 'none';
+      securitySystem.style.display = 'none';
+      aiSystem.style.display = 'block';
+      conversationSuggestion.textContent = translations[currentLang].override_warning;
+    });
+
+    // Initialize the AI System
+    function initAISystem() {
+      updateLanguage('en');
+      chatContainer.style.display = 'none';
+      startQuiz(); // Start the security quiz
+    }
+
+    // Start the AI System
+    initAISystem();
+  </script>
+</body>
+</html>
