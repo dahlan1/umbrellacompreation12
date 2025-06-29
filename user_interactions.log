@@ -1,0 +1,39 @@
+{"timestamp": "2025-06-21T23:44:00.953880", "data": {"type": "quiz_answer", "data": {"question": "Correct", "answer": "G-Virus"}, "timestamp": "2025-06-21T20:44:00.645Z", "ip": "127.0.0.1"}}
+{"timestamp": "2025-06-21T23:44:05.418740", "data": {"type": "password_attempt", "data": {"password": "D6080"}, "timestamp": "2025-06-21T20:44:05.417Z", "ip": "127.0.0.1"}}
+{"timestamp": "2025-06-21T23:44:07.184755", "data": {"type": "character_selected", "data": {"character": "albert", "name": "Dr. Albert Wesker"}, "timestamp": "2025-06-21T20:44:06.867Z", "ip": "127.0.0.1"}}
+{"timestamp": "2025-06-21T23:53:48.449252", "type": "quiz_answer", "data": {"question": "Correct", "answer": "G-Virus"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:48.451708", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:49.594011", "type": "click", "data": {"element": "BUTTON", "id": "copyBtn", "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:51.350288", "type": "click", "data": {"element": "INPUT", "id": "passwordInput", "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:54.325511", "type": "password_attempt", "data": {"password": "C273"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:56.499972", "type": "character_selected", "data": {"character": "albert", "name": "Dr. Albert Wesker"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:53:56.500957", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:54:01.381638", "type": "character_selected", "data": {"character": "alex", "name": "Alex Wesker"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:54:01.384263", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-21T23:54:05.520268", "type": "click", "data": {"element": "LI", "id": null, "session_id": "0oa1nk8ajzd"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:13:20.985174", "type": "quiz_answer", "data": {"question": "Wrong answer! Access denied.", "answer": "T-Virus"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:13:20.985174", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "gkhfe72lvyr"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:18.255257", "type": "quiz_answer", "data": {"question": "Wrong answer! Access denied.", "answer": "T-Virus"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:18.258601", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:23.709635", "type": "quiz_answer", "data": {"question": "Wrong answer! Access denied.", "answer": "Raccoon City Outbreak"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:23.711638", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:28.387250", "type": "quiz_answer", "data": {"question": "Wrong answer! Access denied.", "answer": "Dr. William Birkin"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:28.389333", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:32.511395", "type": "quiz_answer", "data": {"question": "Correct", "answer": "G-Virus"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:32.515484", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:34.055386", "type": "click", "data": {"element": "BUTTON", "id": "copyBtn", "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:35.367417", "type": "click", "data": {"element": "INPUT", "id": "passwordInput", "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:37.226714", "type": "password_attempt", "data": {"password": "P5759"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:39.023033", "type": "character_selected", "data": {"character": "albert", "name": "Dr. Albert Wesker"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:39.026073", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T00:44:39.231208", "type": "click", "data": {"element": "DIV", "id": "chatLog", "session_id": "q226csutuq"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:14.114937", "type": "quiz_answer", "data": {"question": "Correct", "answer": "G-Virus"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:14.420133", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:15.887513", "type": "click", "data": {"element": "BUTTON", "id": "copyBtn", "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:17.290649", "type": "click", "data": {"element": "INPUT", "id": "passwordInput", "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:19.653938", "type": "password_attempt", "data": {"password": "A5269"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:21.548733", "type": "character_selected", "data": {"character": "albert", "name": "Dr. Albert Wesker"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:21.548733", "type": "click", "data": {"element": "BUTTON", "id": null, "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:21.752490", "type": "click", "data": {"element": "DIV", "id": "chatLog", "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:23.010839", "type": "click", "data": {"element": "LI", "id": null, "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
+{"timestamp": "2025-06-22T01:20:24.430870", "type": "click", "data": {"element": "LI", "id": null, "session_id": "x0449i9en4"}, "ip": "127.0.0.1"}
